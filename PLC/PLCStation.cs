@@ -1,4 +1,4 @@
-﻿
+﻿using Common;
 
 namespace PLC
 {
@@ -16,14 +16,24 @@ namespace PLC
         private int _maxCycleTime;
         private Random _random = new Random();
 
-        public PLCStation(string ipAddress, int port, string name, List<string> serialNumberList, int serialNumberArrayIndex, int minCycleTime, int maxCycleTime)
+        //public PLCStation(string ipAddress, int port, string name, List<string> serialNumberList, int serialNumberArrayIndex, int minCycleTime, int maxCycleTime)
+        //{
+        //    _client = new PLCClient(ipAddress, port, name);
+        //    _name = name;
+        //    _serialNumbers = serialNumberList;
+        //    _snArrayIndex = serialNumberArrayIndex;
+        //    _minCycleTime = minCycleTime;
+        //    _maxCycleTime = maxCycleTime;
+        //}
+
+        public PLCStation(StationOptions stationOptions, ClientSimulationOptions clientOptions, List<string> serialNumberList)
         {
-            _client = new PLCClient(ipAddress, port, name);
-            _name = name;
+            _client = new PLCClient(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
+            _name = clientOptions.StationName;
             _serialNumbers = serialNumberList;
-            _snArrayIndex = serialNumberArrayIndex;
-            _minCycleTime = minCycleTime;
-            _maxCycleTime = maxCycleTime;
+            _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
+            _minCycleTime = int.Parse(clientOptions.MinCycleTime);
+            _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
         }
 
         public async Task StartAsync()
