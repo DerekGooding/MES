@@ -7,26 +7,5 @@
       "ScrewResult": "Real",
       "TorqueResult": "Real"
     }
-  },
-  {
-    "StationName": "Station 20",
-    "IpAddress": "127.0.0.1",
-    "Port": "5001",
-    "Results": {
-      "Weight": "Real"
-    }
-  },
-  {
-    "StationName": "Station 30",
-    "IpAddress": "127.0.0.1",
-    "Port": "5002",
-    "Results": {
-      "VisionResult": "Bool"
-    }
-  },
-  {
-    "StationName": "Station 40",
-    "IpAddress": "127.0.0.1",
-    "Port": "5003"
   }
 ]

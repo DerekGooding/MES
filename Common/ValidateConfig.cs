@@ -4,7 +4,7 @@ namespace Common;
 
 public static class ValidateConfig
 {
-    private static readonly string[] _validDataTypes = { "string", "int", "integer", "float", "real", "bool", "boolean" };
+    private static readonly string[] _validDataTypes = { "string", "integer", "real", "bool" };
     public static void ValidateStationConfig(List<StationOptions> options)
     {
 

@@ -41,14 +41,14 @@ namespace PLC
             }
         }
 
-        public async Task SendReceiveAsync(string data)
+        public async Task<string> SendReceiveAsync(string data)
         {
             try
             {
                 if (_client == null || !_client.Connected)
                 {
                     Console.WriteLine($"{_name} client is not connected to the server.");
-                    return;
+                    return null;
                 }
                 NetworkStream stream = _client.GetStream();
                 stream.ReadTimeout = 5000;
@@ -61,7 +61,8 @@ namespace PLC
                 int bytesRead = await stream.ReadAsync(receiveData, 0, receiveData.Length, _token);
                 string responseData = System.Text.Encoding.ASCII.GetString(receiveData, 0, bytesRead);
                 Console.WriteLine($"{_name} client received: {responseData}");
-                await Task.Delay(5000); // Simulate processing delay
+                //await Task.Delay(3000);
+                return responseData;
 
             }
             catch (OperationCanceledException)
@@ -72,6 +73,8 @@ namespace PLC
             {
                 Console.WriteLine($"{_name} client encountered an error during Send/Receive. {e.Message}");
             }
+
+            return null;
         }
 
         public bool IsConnected()

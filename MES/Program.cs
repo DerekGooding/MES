@@ -25,8 +25,6 @@ internal class Program
             return;
         }
 
-
-
         List<PLCServer> servers = new List<PLCServer>();
         List<Task> serverTasks = new List<Task>();
 

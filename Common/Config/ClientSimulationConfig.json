@@ -4,23 +4,5 @@
     "SerialNumberArrayIndex": "0",
     "MinCycleTime": "6000",
     "MaxCycleTimel": "10000"
-  },
-  {
-    "StationName": "Station 20",
-    "SerialNumberArrayIndex": "1",
-    "MinCycleTime": "6000",
-    "MaxCycleTimel": "10000"
-  },
-  {
-    "StationName": "Station 30",
-    "SerialNumberArrayIndex": "2",
-    "MinCycleTime": "6000",
-    "MaxCycleTimel": "10000"
-  },
-  {
-    "StationName": "Station 40",
-    "SerialNumberArrayIndex": "3",
-    "MinCycleTime": "6000",
-    "MaxCycleTimel": "10000"
   }
 ]
