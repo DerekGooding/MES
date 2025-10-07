@@ -61,7 +61,6 @@ namespace PLC
                 int bytesRead = await stream.ReadAsync(receiveData, 0, receiveData.Length, _token);
                 string responseData = System.Text.Encoding.ASCII.GetString(receiveData, 0, bytesRead);
                 Console.WriteLine($"{_name} client received: {responseData}");
-                //await Task.Delay(3000);
                 return responseData;
 
             }

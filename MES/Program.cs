@@ -1,4 +1,5 @@
 ﻿using Common;
+using MES.Data;
 using System.Text.Json;
 
 namespace MES;
@@ -7,6 +8,11 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
+        DataContext context = new DataContext();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+        context.Dispose();
+
         List<StationOptions> options;
 
         JsonSerializerOptions jsonOptions = new JsonSerializerOptions {
@@ -38,11 +44,10 @@ internal class Program
         Console.WriteLine("Press any key to exit...");
         Console.ReadKey();
 
+        await Task.WhenAll(serverTasks);
         foreach (var server in servers)
         {
             server.Dispose();
         }
-
-        await Task.WhenAll(serverTasks);
     }
 }

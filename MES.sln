@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES", "MES\MES.csproj", "{8087309B-DED5-4ED2-A3F1-F66A240307E9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PLC", "PLC\PLC.csproj", "{60BFD4A2-71F7-4FA4-B79A-1852F51E31C2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{BDC703BA-552F-4129-9AE3-93C6DCFBACA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.Data", "MES.Data\MES.Data.csproj", "{3635A2D8-B4DA-48FD-9992-83AFEAF4F9A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{BDC703BA-552F-4129-9AE3-93C6DCFBACA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDC703BA-552F-4129-9AE3-93C6DCFBACA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDC703BA-552F-4129-9AE3-93C6DCFBACA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3635A2D8-B4DA-48FD-9992-83AFEAF4F9A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3635A2D8-B4DA-48FD-9992-83AFEAF4F9A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3635A2D8-B4DA-48FD-9992-83AFEAF4F9A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3635A2D8-B4DA-48FD-9992-83AFEAF4F9A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -4,8 +4,50 @@
     "IpAddress": "127.0.0.1",
     "Port": "5000",
     "Results": {
-      "ScrewResult": "Real",
-      "TorqueResult": "Real"
+      "VisionMeasurement": "Real"
+    }
+  },
+  {
+    "StationName": "Station 20",
+    "IpAddress": "127.0.0.1",
+    "Port": "5001",
+    "Results": {
+      "PasteDispenseWeight": "Real"
+    }
+  },
+  {
+    "StationName": "Station 30",
+    "IpAddress": "127.0.0.1",
+    "Port": "5002",
+    "Results": {
+      "CircuitBoardSerialNumber": "String"
+    }
+  },
+  {
+    "StationName": "Station 40",
+    "IpAddress": "127.0.0.1",
+    "Port": "5003",
+    "Results": {
+      "Screw1Torque": "Real",
+      "Screw2Torque": "Real",
+      "Screw3Torque": "Real",
+      "Screw4Torque": "Real"
+    }
+  },
+  {
+    "StationName": "Station 50",
+    "IpAddress": "127.0.0.1",
+    "Port": "5004",
+    "Results": {
+      "VoltageOutput": "Real"
+    }
+  },
+  {
+    "StationName": "Station 60",
+    "IpAddress": "127.0.0.1",
+    "Port": "5005",
+    "Results": {
+      "FinalWeight": "Real"
     }
   }
 ]

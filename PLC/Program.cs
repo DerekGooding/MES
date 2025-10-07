@@ -30,7 +30,7 @@ internal class Program
             return;
         }
 
-        SerialNumberGenerator serialGen = new SerialNumberGenerator("AA", 0, 6, 5);
+        SerialNumberGenerator serialGen = new SerialNumberGenerator("AA", 0, 6, stationOptions.Count);
 
         List<PLCStation> stations = new List<PLCStation>();
 

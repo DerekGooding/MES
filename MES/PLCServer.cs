@@ -2,6 +2,8 @@
 using System.Net.Sockets;
 using Common;
 using Common.Config.Enums;
+using MES.Data;
+using System.Reflection;
 
 namespace MES;
 
@@ -85,7 +87,7 @@ internal class PLCServer : IDisposable
 
                 string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead);
                 Console.WriteLine($"{_name} server received: {receivedData}");
-                string parsedResponse = ParseRequest(receivedData);
+                string parsedResponse = await ParseRequest(receivedData);
 
                 byte[] response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
                 try
@@ -113,34 +115,120 @@ internal class PLCServer : IDisposable
 
     }
 
-    private string ParseRequest(string request)
+    private async Task<string> ParseRequest(string request)
     {
         
         string[] parts = request.Split('|');
+
         if (parts.Length < 3)
         {
             return $"{_name} received invalid request format: {request}";
         }
         string operation = parts[0].Trim();
+        string stationName = parts[1].Trim();
+        string serialNumber = parts[2].Trim();
 
-        if(operation == PLCOperationsEnum.GetStatus.ToString())
+        if (operation == PLCOperationsEnum.GetStatus.ToString())
         {
-            return $"{PLCOperationsEnum.StatusGood} | {_name} | {parts[2]}";
+            bool status = await GetStatus(serialNumber);
+            if (status)
+            {
+                return $"{PLCOperationsEnum.StatusGood}|{_name}|{serialNumber}";
+            }
+            return $"{PLCOperationsEnum.StatusBad}|{_name}|{serialNumber}";
         }
 
         if (operation == PLCOperationsEnum.UpdateStatus.ToString())
         {
-            string serialNumber = parts[2].Trim();
+            
             string status = parts[3].Trim();
-            return $"{PLCOperationsEnum.UpdateStatus} | {_name} | {status}";
+            await UpdateStatus(request);
+            return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{status}";
         }
 
         return $"{_name} received unknown operation: {operation}";
     }
 
-    private bool GetStatus(string serialNumber)
+    private async Task<bool>  GetStatus(string serialNumber)
     {
-        return true;
+        using var repository = new PartDataRepository();
+        PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
+        Console.WriteLine($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
+        return part != null && part.Status == PLCOperationsEnum.StatusGood.ToString();
+    }
+
+    private async Task UpdateStatus(string request)
+    {
+        string[] parts = request.Split('|', ':');
+        string operation = parts[0].Trim();
+        string stationName = parts[1].Trim();
+        string serialNumber = parts[2].Trim();
+        string status = parts[3].Trim();
+        using var repository = new PartDataRepository();
+
+        PartData part = new PartData
+        {
+            SerialNumber = serialNumber,
+            Status = status,
+            LastStationComplete = stationName,
+            Timestamp = DateTime.Now
+        };
+
+        if (parts.Length == 4)
+        {
+            await repository.UpdatePartDataAsync(part);
+            return;
+        }
+
+        var properties = typeof(PartData).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var result in _results)
+        {
+            string dataType = result.Value.ToLower();
+            string key = result.Key;
+            int index = Array.IndexOf(parts, key);
+
+            if (index != -1 && index + 1 < parts.Length)
+            {
+                foreach (var property in properties)
+                {
+                    string propertyName = property.Name;
+                    string value = parts[index + 1].Trim();
+                    if (propertyName == key)
+                    {
+                        switch (dataType)
+                        {
+                            case "int":
+                                int intValue;
+                                if (int.TryParse(value, out intValue))
+                                {
+                                    property.SetValue(part, intValue);
+                                }
+                                break;
+                            case "real":
+                                float floatValue;
+                                if (float.TryParse(value, out floatValue))
+                                {
+                                    property.SetValue(part, floatValue);
+                                }
+                                break;
+                            case "bool":
+                                bool boolValue;
+                                if (bool.TryParse(value, out boolValue))
+                                {
+                                    property.SetValue(part, boolValue);
+                                }
+                                break;
+                            case "string":
+                                property.SetValue(part, value);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        await repository.UpdatePartDataAsync(part);
     }
 
     public void Dispose()
