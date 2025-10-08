@@ -1,6 +1,6 @@
 ﻿
 
-namespace Common.Config.Enums
+namespace MES.Common.Config.Enums
 {
     public enum PLCOperationsEnum
     {

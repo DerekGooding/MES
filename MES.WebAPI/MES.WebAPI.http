@@ -1,0 +1,6 @@
+@MES.WebAPI_HostAddress = https://localhost:7195
+
+
+GET {{MES.WebAPI_HostAddress}}/api/partdata
+
+###

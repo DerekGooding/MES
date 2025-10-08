@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using Common;
-using Common.Config.Enums;
+using MES.Common;
+using MES.Common.Config.Enums;
 using MES.Data;
 using System.Reflection;
 

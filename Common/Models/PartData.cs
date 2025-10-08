@@ -1,6 +1,6 @@
 ﻿
 
-namespace MES.Data;
+namespace MES.Common;
 
 public class PartData
 {

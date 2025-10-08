@@ -1,7 +1,7 @@
-﻿using Common;
+﻿using MES.Common;
 using System.Text.Json;
 
-namespace PLC;
+namespace MES.PLC;
 
 internal class Program
 {

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Common;
+namespace MES.Common;
 
 public class StationOptions
 {

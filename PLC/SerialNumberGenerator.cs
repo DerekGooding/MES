@@ -1,6 +1,6 @@
 ﻿
 
-namespace PLC;
+namespace MES.PLC;
 
 internal class SerialNumberGenerator
 {

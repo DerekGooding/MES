@@ -1,0 +1,73 @@
+﻿@page "/partoverview"
+@using MES.Common
+
+@inject HttpClient Http
+
+<PageTitle>PartOverview</PageTitle>
+
+<h1>Part Overview</h1>
+
+
+@if (parts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Serial Number</th>
+                <th>Last Station</th>
+                <th>Status</th>
+                <th>Date/Time</th>
+                <th>Vision Result</th>
+                <th>Paste Weight</th>
+                <th>Circuit Board SN</th>
+                <th>Screw 1 Torque</th>
+                <th>Screw 2 Torque</th>
+                <th>Screw 3 Torque</th>
+                <th>Screw 4 Torque</th>
+                <th>Voltage Output</th>
+                <th>Final Weight</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var part in parts)
+            {
+                <tr>
+                    <td>@part.SerialNumber</td>
+                    <td>@part.LastStationComplete</td>
+                    <td>@part.Status</td>
+                    <td>@part.Timestamp.ToShortDateString()</td>
+                    <td>@part.VisionMeasurement</td>
+                    <td>@part.PasteDispenseWeight</td>
+                    <td>@part.CircuitBoardSerialNumber</td>
+                    <td>@part.Screw1Torque</td>
+                    <td>@part.Screw2Torque</td>
+                    <td>@part.Screw3Torque</td>
+                    <td>@part.Screw4Torque</td>
+                    <td>@part.VoltageOutput</td>
+                    <td>@part.FinalWeight</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private PartData[]? parts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            parts = await Http.GetFromJsonAsync<PartData[]>("https://localhost:7195/api/PartData");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching part data: {ex.Message}");
+        }
+    }
+
+}

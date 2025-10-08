@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Common;
+namespace MES.Common;
 
 public static class ValidateConfig
 {
