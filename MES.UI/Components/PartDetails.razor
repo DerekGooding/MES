@@ -1,0 +1,32 @@
+﻿@using MES.Common
+
+@if (Part != null)
+{
+    <div class="card shadow-sm" style="width: 20rem;">
+        <div class="card-header bg-primary text-white">
+            Part Details
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Part Number: @Part.PartId</h5>
+            <p class="card-text">Serial Number: @Part.SerialNumber</p>
+            <p class="card-text">Status: @Part.Status</p>
+            <p class="card-text">Last Station: @Part.LastStationComplete</p>
+            <p class="card-text">Timestamp: @Part.Timestamp</p>
+            <p class="card-text">Vision Measurement: @Part.VisionMeasurement</p>
+            <p class="card-text">Paste Weight: @Part.PasteDispenseWeight</p>
+            <p class="card-text">Circuit Board SN: @Part.CircuitBoardSerialNumber</p>
+            <p class="card-text">Screw 1 Torque: @Part.Screw1Torque</p>
+            <p class="card-text">Screw 2 Torque: @Part.Screw2Torque</p>
+            <p class="card-text">Screw 3 Torque: @Part.Screw3Torque</p>
+            <p class="card-text">Screw 4 Torque: @Part.Screw4Torque</p>
+            <p class="card-text">Voltage Output: @Part.VoltageOutput</p>
+            <p class="card-text">Final Weight: @Part.FinalWeight</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public PartData? Part { get; set; }
+}
+

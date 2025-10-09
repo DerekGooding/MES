@@ -1,0 +1,60 @@
+﻿@page "/partinformation"
+@using MES.Common
+@inject HttpClient Http
+
+<PageTitle>Part Details</PageTitle>
+
+<div class="container mt-4">
+    <h1>Part Details</h1>
+    <div class="mb-3">
+        <label for="serialInput" class="form-label">Serial Number</label>
+        <input id="serialInput" class="form-control" @bind="serialNumber" />
+    </div>
+    <button class="btn btn-primary mb-3" @onclick="SearchPart">Search</button>
+</div>
+@if (isSearching)
+{
+    <div class="text-muted">Searching...</div>
+}
+else if (searchError != null)
+{
+    <div class="alert alert-danger">@searchError</div>
+}
+else if (foundPart != null)
+{
+    <PartDetails Part="foundPart" />
+}
+
+@code {
+    private string serialNumber = string.Empty;
+    private PartData? foundPart;
+    private bool isSearching = false;
+    private string? searchError;
+
+    private async Task SearchPart()
+    {
+        isSearching = true;
+        searchError = null;
+        foundPart = null;
+
+        try
+        {
+            // Replace with your actual API endpoint for searching by serial number
+            foundPart = await Http.GetFromJsonAsync<PartData>($"https://localhost:7195/api/PartData/serial/{serialNumber}");
+            if (foundPart == null)
+            {
+                searchError = "Part not found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            searchError = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            isSearching = false;
+        }
+    }
+}
+
+

@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.Data", "MES.Data\MES.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.WebAPI", "MES.WebAPI\MES.WebAPI.csproj", "{920B9D3E-581B-4D9F-920C-53364268D2FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.UI", "MES.UI\MES.UI.csproj", "{23C5CB69-0701-4F5F-89E8-B1FAE0037DCC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MES.UI", "MES.UI\MES.UI.csproj", "{E9DDA46A-F71D-4F11-B8C3-C3984443D70E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{920B9D3E-581B-4D9F-920C-53364268D2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{920B9D3E-581B-4D9F-920C-53364268D2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{920B9D3E-581B-4D9F-920C-53364268D2FA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{23C5CB69-0701-4F5F-89E8-B1FAE0037DCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{23C5CB69-0701-4F5F-89E8-B1FAE0037DCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{23C5CB69-0701-4F5F-89E8-B1FAE0037DCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23C5CB69-0701-4F5F-89E8-B1FAE0037DCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9DDA46A-F71D-4F11-B8C3-C3984443D70E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9DDA46A-F71D-4F11-B8C3-C3984443D70E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9DDA46A-F71D-4F11-B8C3-C3984443D70E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9DDA46A-F71D-4F11-B8C3-C3984443D70E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
