@@ -1,58 +1,140 @@
 ﻿@page "/"
+@using MES.Common
+@using MudBlazor
+@inject HttpClient Http
 
 <PageTitle>Home</PageTitle>
 
-<div class="container mt-4">
-    <h1 class="mb-4">Dashboard</h1>
+@if (isLoading)
+{
+    <ProgressIndicator IsVisible="@isLoading" />
+}
+else if (errorMessage != null)
+{
+    <p class="text-danger">Failed to load part counts.</p>
+}
+else
+{
 
-    <!-- Counters Section -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Parts</h5>
-                    <p class="display-6">1234</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Good Parts</h5>
-                    <p class="display-6 text-success">1200</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Bad Parts</h5>
-                    <p class="display-6 text-danger">34</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Rework</h5>
-                    <p class="display-6 text-warning">10</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div class="container mt-4">
+        <h1 class="mb-4">Dashboard</h1>
 
-    <!-- Graphs Section (Placeholder) -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Production Trends</h5>
-                    <div style="height:300px; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border-radius:8px;">
-                        <!-- Replace this with a chart component later -->
-                        <span class="text-muted">[Graph Placeholder]</span>
+        <!-- Counters Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Completed</h5>
+                        <p class="display-6">@partCount.TotalParts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">In Process</h5>
+                        <p class="display-6">@partCount.InProcessParts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Good</h5>
+                        <p class="display-6 text-success">@partCount.GoodParts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Bad</h5>
+                        <p class="display-6 text-danger">@partCount.BadParts</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphs Section (Placeholder) -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Production Trends</h5>
+                        <div style="height:300px; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border-radius:8px;">
+                            <!-- Replace this with a chart component later -->
+                            <span>
+                                @if (data != null)
+                                {
+                                    <MudPaper Style="background:#f8f9fa; border-radius:8px; width:220px; height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                        <MudChart ChartType="ChartType.Pie"
+                                        InputData="@data"
+                                        InputLabels="@labels"
+                                        Width="200px"
+                                        Height="200px"
+                                        ColorPalette="chartColors" />
+                                        <div style="display: flex; justify-content: center; gap: 24px; margin-top: 12px;">
+                                            <span style="display: flex; align-items: center;">
+                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#1976d2; display:inline-block; margin-right:8px;"></span>
+                                                <span>Total</span>
+                                            </span>
+                                            <span style="display: flex; align-items: center;">
+                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#43a047; display:inline-block; margin-right:8px;"></span>
+                                                <span>Good</span>
+                                            </span>
+                                            <span style="display: flex; align-items: center;">
+                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#d32f2f; display:inline-block; margin-right:8px;"></span>
+                                                <span>Bad</span>
+                                            </span>
+                                        </div>
+                                    </MudPaper>
+                                }
+
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+}
+
+@code {
+    private PartCountDto? partCount;
+    private bool isLoading = true;
+    private string? errorMessage;
+    private string[] labels = { "Total", "Good", "Bad" };
+    private double[]? data;
+    private string[]? chartColors;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            partCount = await Http.GetFromJsonAsync<PartCountDto>("https://localhost:7195/api/PartData/PartCounts");
+
+            if (partCount != null)
+            {
+                data = new double[] { partCount.TotalParts, partCount.GoodParts, partCount.BadParts };
+                chartColors = new string[]
+                {
+                    Colors.Blue.Default,
+                    Colors.Green.Default,
+                    Colors.Red.Default
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ($"Error fetching part counts: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+
+        }
+    }
+}

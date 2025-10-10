@@ -7,8 +7,7 @@
             Part Details
         </div>
         <div class="card-body">
-            <h5 class="card-title">Part Number: @Part.PartId</h5>
-            <p class="card-text">Serial Number: @Part.SerialNumber</p>
+            <h5 class="card-text">Serial Number: @Part.SerialNumber</h5>
             <p class="card-text">Status: @Part.Status</p>
             <p class="card-text">Last Station: @Part.LastStationComplete</p>
             <p class="card-text">Timestamp: @Part.Timestamp</p>
@@ -27,6 +26,6 @@
 
 @code {
     [Parameter]
-    public PartData? Part { get; set; }
+    public PartDataDto? Part { get; set; }
 }
 

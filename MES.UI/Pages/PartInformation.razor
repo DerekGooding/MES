@@ -14,7 +14,7 @@
 </div>
 @if (isSearching)
 {
-    <div class="text-muted">Searching...</div>
+    <ProgressIndicator IsVisible="@isSearching" />
 }
 else if (searchError != null)
 {
@@ -27,7 +27,7 @@ else if (foundPart != null)
 
 @code {
     private string serialNumber = string.Empty;
-    private PartData? foundPart;
+    private PartDataDto? foundPart;
     private bool isSearching = false;
     private string? searchError;
 
@@ -39,8 +39,7 @@ else if (foundPart != null)
 
         try
         {
-            // Replace with your actual API endpoint for searching by serial number
-            foundPart = await Http.GetFromJsonAsync<PartData>($"https://localhost:7195/api/PartData/serial/{serialNumber}");
+            foundPart = await Http.GetFromJsonAsync<PartDataDto>($"https://localhost:7195/api/PartData/GetBySerial/{serialNumber}");
             if (foundPart == null)
             {
                 searchError = "Part not found.";
