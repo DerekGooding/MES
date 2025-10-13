@@ -116,3 +116,23 @@ code {
 .mud-chart-legend {
     display: none !important;
 }
+
+.card-header.top-row-color {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: #343a40 !important;
+}
+
+.top-row-color {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: #343a40 !important;
+}
+
+.btn.btn-primary.mb-3.top-row-color {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-color: #343a40 !important;
+    border-color: #343a40 !important;
+}
+
+.spinner-border-color {
+    border-color: rgb(5, 39, 103) !important;
+}

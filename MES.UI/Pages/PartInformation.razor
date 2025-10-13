@@ -10,11 +10,13 @@
         <label for="serialInput" class="form-label">Serial Number</label>
         <input id="serialInput" class="form-control" @bind="serialNumber" />
     </div>
-    <button class="btn btn-primary mb-3" @onclick="SearchPart">Search</button>
+    <button class="btn btn-primary mb-3 top-row-color" @onclick="SearchPart">Search</button>
 </div>
 @if (isSearching)
 {
-    <ProgressIndicator IsVisible="@isSearching" />
+    <div class="d-flex justify-content-center">
+        <ProgressIndicator IsVisible="@isSearching" />
+    </div>
 }
 else if (searchError != null)
 {
@@ -22,7 +24,9 @@ else if (searchError != null)
 }
 else if (foundPart != null)
 {
-    <PartDetails Part="foundPart" />
+    <div class="d-flex justify-content-center">
+        <PartDetails Part="foundPart" />
+    </div>
 }
 
 @code {
@@ -40,6 +44,7 @@ else if (foundPart != null)
         try
         {
             foundPart = await Http.GetFromJsonAsync<PartDataDto>($"https://localhost:7195/api/PartData/GetBySerial/{serialNumber}");
+            await Task.Delay(1000);
             if (foundPart == null)
             {
                 searchError = "Part not found.";

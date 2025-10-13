@@ -8,9 +8,11 @@
 <h1>Part Overview</h1>
 
 
-@if (parts == null)
+@if (isLoading == true)
 {
-    <p><em>Loading...</em></p>
+    <div class="d-flex justify-content-center">
+        <ProgressIndicator IsVisible="@isLoading" />
+    </div>
 }
 else
 {
@@ -30,7 +32,7 @@ else
                     <td>@part.SerialNumber</td>
                     <td>@part.LastStationComplete</td>
                     <td>@part.Status</td>
-                    <td>@part.Timestamp.ToShortDateString()</td>
+                    <td>@part.Timestamp.ToString("g")</td>
                 </tr>
             }
         </tbody>
@@ -39,16 +41,22 @@ else
 
 @code {
     private PartData[]? parts;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             parts = await Http.GetFromJsonAsync<PartData[]>("https://localhost:7195/api/PartData");
+            await Task.Delay(1000);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching part data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

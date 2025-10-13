@@ -7,7 +7,9 @@
 
 @if (isLoading)
 {
-    <ProgressIndicator IsVisible="@isLoading" />
+    <div class="d-flex justify-content-center">
+        <ProgressIndicator IsVisible="@isLoading" />
+    </div>
 }
 else if (errorMessage != null)
 {
@@ -68,11 +70,11 @@ else
                                 {
                                     <MudPaper Style="background:#f8f9fa; border-radius:8px; width:220px; height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
                                         <MudChart ChartType="ChartType.Pie"
-                                        InputData="@data"
-                                        InputLabels="@labels"
-                                        Width="200px"
-                                        Height="200px"
-                                        ColorPalette="chartColors" />
+                                                  InputData="@data"
+                                                  InputLabels="@labels"
+                                                  Width="200px"
+                                                  Height="200px"
+                                                  ColorPalette="chartColors" />
                                         <div style="display: flex; justify-content: center; gap: 24px; margin-top: 12px;">
                                             <span style="display: flex; align-items: center;">
                                                 <span style="width:14px; height:14px; border-radius:50%; background-color:#1976d2; display:inline-block; margin-right:8px;"></span>
@@ -115,7 +117,7 @@ else
         try
         {
             partCount = await Http.GetFromJsonAsync<PartCountDto>("https://localhost:7195/api/PartData/PartCounts");
-
+            await Task.Delay(1000);
             if (partCount != null)
             {
                 data = new double[] { partCount.TotalParts, partCount.GoodParts, partCount.BadParts };
