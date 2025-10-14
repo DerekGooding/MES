@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using MES.Common
-@using MudBlazor
+@inject IJSRuntime JS
 @inject HttpClient Http
 
 <PageTitle>Home</PageTitle>
@@ -14,6 +14,7 @@
 else if (errorMessage != null)
 {
     <p class="text-danger">Failed to load part counts.</p>
+    <p class="text-danger">@errorMessage</p>
 }
 else
 {
@@ -64,35 +65,9 @@ else
                     <div class="card-body">
                         <h5 class="card-title">Production Trends</h5>
                         <div style="height:300px; display:flex; align-items:center; justify-content:center; background:#f8f9fa; border-radius:8px;">
-                            <!-- Replace this with a chart component later -->
-                            <span>
-                                @if (data != null)
-                                {
-                                    <MudPaper Style="background:#f8f9fa; border-radius:8px; width:220px; height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                        <MudChart ChartType="ChartType.Pie"
-                                                  InputData="@data"
-                                                  InputLabels="@labels"
-                                                  Width="200px"
-                                                  Height="200px"
-                                                  ColorPalette="chartColors" />
-                                        <div style="display: flex; justify-content: center; gap: 24px; margin-top: 12px;">
-                                            <span style="display: flex; align-items: center;">
-                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#1976d2; display:inline-block; margin-right:8px;"></span>
-                                                <span>Total</span>
-                                            </span>
-                                            <span style="display: flex; align-items: center;">
-                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#43a047; display:inline-block; margin-right:8px;"></span>
-                                                <span>Good</span>
-                                            </span>
-                                            <span style="display: flex; align-items: center;">
-                                                <span style="width:14px; height:14px; border-radius:50%; background-color:#d32f2f; display:inline-block; margin-right:8px;"></span>
-                                                <span>Bad</span>
-                                            </span>
-                                        </div>
-                                    </MudPaper>
-                                }
-
-                            </span>
+                            <div class="chart-container">
+                                <canvas id="myPieChart" width="250" height="250"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -106,11 +81,10 @@ else
     private PartCountDto? partCount;
     private bool isLoading = true;
     private string? errorMessage;
-    private string[] labels = { "Total", "Good", "Bad" };
     private double[]? data;
-    private string[]? chartColors;
-
-
+    private string[] labels = new[] { "Total", "Good", "Bad" };
+    private string[]? colors = new[] { "#4e73df", "#1cc88a", "#e74a3b" };
+    private bool chartRendered = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,22 +95,39 @@ else
             if (partCount != null)
             {
                 data = new double[] { partCount.TotalParts, partCount.GoodParts, partCount.BadParts };
-                chartColors = new string[]
-                {
-                    Colors.Blue.Default,
-                    Colors.Green.Default,
-                    Colors.Red.Default
-                };
             }
         }
         catch (Exception ex)
         {
             errorMessage = ($"Error fetching part counts: {ex.Message}");
+            Console.WriteLine(ex);
         }
         finally
         {
             isLoading = false;
-
         }
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (partCount != null && data != null && !chartRendered)
+        {
+            try
+            {
+
+                await JS.InvokeVoidAsync(
+                    "renderPieChart",
+                    "myPieChart",
+                    labels,
+                    data,
+                    colors);
+                chartRendered = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"JS Interop error: {ex.Message}");
+            }
+        }
+    }
+
 }

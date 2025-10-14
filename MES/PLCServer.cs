@@ -133,9 +133,9 @@ internal class PLCServer : IDisposable
             bool status = await GetStatus(serialNumber);
             if (status)
             {
-                return $"{PLCOperationsEnum.StatusGood}|{_name}|{serialNumber}";
+                return $"{PLCOperationsEnum.Good}|{_name}|{serialNumber}";
             }
-            return $"{PLCOperationsEnum.StatusBad}|{_name}|{serialNumber}";
+            return $"{PLCOperationsEnum.Bad}|{_name}|{serialNumber}";
         }
 
         if (operation == PLCOperationsEnum.UpdateStatus.ToString())
@@ -154,7 +154,7 @@ internal class PLCServer : IDisposable
         using var repository = new PartDataRepository();
         PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
         Console.WriteLine($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
-        return part != null && part.Status == PLCOperationsEnum.StatusGood.ToString();
+        return part != null && part.Status == PLCOperationsEnum.Good.ToString();
     }
 
     private async Task UpdateStatus(string request)

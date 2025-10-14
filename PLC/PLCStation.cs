@@ -85,7 +85,7 @@ internal class PLCStation
 
         string[] parts = response.Split('|');
 
-        return parts[0].Trim() == PLCOperationsEnum.StatusGood.ToString();
+        return parts[0].Trim() == PLCOperationsEnum.Good.ToString();
 
     }
 
@@ -153,10 +153,10 @@ internal class PLCStation
     {
         if (_random.Next(1, 100) <= 10)
         {
-            return PLCOperationsEnum.StatusBad;
+            return PLCOperationsEnum.Bad;
         }
 
-        return PLCOperationsEnum.StatusGood;
+        return PLCOperationsEnum.Good;
     }
 
 }
