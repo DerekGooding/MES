@@ -54,7 +54,7 @@ This is a web api that exposes the database to the front end.
   
 ## Running the project
 Most of my experience has been with visual studio, so that's what these steps describe. I'm not sure what it would take to run the project in vscode.
-1. Press the start button in visual studio. It will launch the MES and MES.PLC apps. The app will delete the existing sqlite database and create a new one. You should see the messages being exchanged between the clients and servers in the console windows.
+1. Press the start button in visual studio. It will launch the MES and MES.PLC apps. The app will delete the existing sqlite database and create a new one. After a approximately 10 seconds you should see the messages being exchanged between the clients and servers in the console windows.
 2. Right click on MES.WebAPI then select Debug -> Start New Instance. This will launch the web server.
 3. Right click on MES.UI then select Debug -> Start New Instance. This will launch the front end.
 
