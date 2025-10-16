@@ -7,9 +7,9 @@ public class PartDataRepository : IDisposable
 {
     private DataContext _context;
 
-    public PartDataRepository()
+    public PartDataRepository(string connectionString)
     {
-        _context = new DataContext();
+        _context = new DataContext(connectionString);
     }
 
     public async Task AddPartDataAsync(PartData partData)

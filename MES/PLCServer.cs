@@ -17,9 +17,10 @@ internal class PLCServer : IDisposable
     private CancellationToken _token;
     private CancellationTokenSource _cts;
     private Dictionary<string, string> _results = new Dictionary<string, string>();
+    private string _dbPath;
 
 
-    public PLCServer(StationOptions options)
+    public PLCServer(StationOptions options, string dbPath)
     {
         _port = int.Parse(options.Port);
         _ipAddress = IPAddress.Parse(options.IpAddress);
@@ -27,6 +28,7 @@ internal class PLCServer : IDisposable
         _cts = new CancellationTokenSource();
         _token = _cts.Token;
         _results = options.Results;
+        _dbPath = dbPath;
     }
 
 
@@ -72,28 +74,27 @@ internal class PLCServer : IDisposable
     {
         byte[] buffer = new byte[1024];
 
-
         try
         {
             using NetworkStream stream = client.GetStream();
             while (!_token.IsCancellationRequested)
             {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, _token);
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, _token); //Listen for data from client
                 if (bytesRead == 0)
                 {
                     Console.WriteLine($"{_name} server: client disconnected.");
                     break;
                 }
 
-                string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead); //Read data from client
                 Console.WriteLine($"{_name} server received: {receivedData}");
-                string parsedResponse = await ParseRequest(receivedData);
+                string parsedResponse = await ParseRequest(receivedData); //Process the data and prepare a response
 
                 byte[] response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
                 try
                 {
                     Console.WriteLine($"{_name} server sent: {parsedResponse}");
-                    await stream.WriteAsync(response, 0, response.Length, _token);
+                    await stream.WriteAsync(response, 0, response.Length, _token); //Send response to client
                 }
                 catch (Exception e)
                 {
@@ -117,7 +118,19 @@ internal class PLCServer : IDisposable
 
     private async Task<string> ParseRequest(string request)
     {
-        
+        /* Received data is formatted as follows:
+         * 
+         * GetStatus|Station Name|Current Serial Number
+         * 
+         * If the update request has process data (measuremnts, test results, etc) the format is:
+         * UpdateStatus|Station Name|Current Serial Number|Pass/Fail:Process Result|Process Result|...
+         * 
+         * If the update does not have process data the format is:
+         * UpdateStatus|Station Name|Current Serial Number|Pass/Fail
+         * 
+         */
+
+
         string[] parts = request.Split('|');
 
         if (parts.Length < 3)
@@ -151,7 +164,7 @@ internal class PLCServer : IDisposable
 
     private async Task<bool>  GetStatus(string serialNumber)
     {
-        using var repository = new PartDataRepository();
+        using var repository = new PartDataRepository(_dbPath);
         PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
         Console.WriteLine($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
         return part != null && part.Status == PLCOperationsEnum.Good.ToString();
@@ -164,7 +177,7 @@ internal class PLCServer : IDisposable
         string stationName = parts[1].Trim();
         string serialNumber = parts[2].Trim();
         string status = parts[3].Trim();
-        using var repository = new PartDataRepository();
+        using var repository = new PartDataRepository(_dbPath);
 
         PartData part = new PartData
         {
@@ -174,29 +187,29 @@ internal class PLCServer : IDisposable
             Timestamp = DateTime.Now
         };
 
-        if (parts.Length == 4)
+        if (parts.Length == 4) // If the request does not contain any process data, just update the status and return
         {
             await repository.UpdatePartDataAsync(part);
             return;
         }
 
-        var properties = typeof(PartData).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var properties = typeof(PartData).GetProperties(BindingFlags.Public | BindingFlags.Instance); // Get all public instance properties of the PartData class
 
-        foreach (var result in _results)
+        foreach (var result in _results) // Loop through each expected result defined in the configuration
         {
-            string dataType = result.Value.ToLower();
-            string key = result.Key;
-            int index = Array.IndexOf(parts, key);
+            string dataType = result.Value.ToLower(); // Get the data type of the result (int, real, bool, string)
+            string key = result.Key; // Get the key of the result (e.g., VisionMeasurement, PasteDispenseWeight, etc.)
+            int index = Array.IndexOf(parts, key); // Find the index of the key in the parts array
 
-            if (index != -1 && index + 1 < parts.Length)
+            if (index != -1 && index + 1 < parts.Length) // If the key is found and there is a value following it
             {
-                foreach (var property in properties)
+                foreach (var property in properties) // Loop through each property of the PartData class
                 {
-                    string propertyName = property.Name;
-                    string value = parts[index + 1].Trim();
-                    if (propertyName == key)
+                    string propertyName = property.Name; // Get the name of the property
+                    string value = parts[index + 1].Trim(); // Get the value associated with the key
+                    if (propertyName == key) // If the property name matches the key
                     {
-                        switch (dataType)
+                        switch (dataType) // Set the property value based on the data type
                         {
                             case "int":
                                 int intValue;

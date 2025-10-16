@@ -61,7 +61,7 @@ internal class PLCStation
 
         }
 
-        Completed?.Invoke();
+        Completed?.Invoke(); // Notify the coordinator that this station has completed its cycle
     }
 
     public async Task<string> ReadWriteAsync(string dataToSend)

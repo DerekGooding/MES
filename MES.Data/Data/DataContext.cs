@@ -6,10 +6,11 @@ namespace MES.Data;
 public class DataContext : DbContext
 {
     public DbSet<PartData> Parts { get; set; }
-    public readonly string DbPath = "partsdata.db";
+    private readonly string _connectionString;
 
-    public DataContext()
+    public DataContext(string connectionString)
     {
+        _connectionString = connectionString;
     }
     public DataContext(DbContextOptions<DataContext> options)
         : base(options)
@@ -19,8 +20,8 @@ public class DataContext : DbContext
     {
         if (!options.IsConfigured)
         {
-            // Use SQLite database
-            options.UseSqlite($"Data Source={DbPath}");
+
+            options.UseSqlite(_connectionString);
 
         }
 

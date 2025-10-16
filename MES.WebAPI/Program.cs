@@ -11,6 +11,8 @@ public class Program
     {
         List<StationOptions> stationConfig;
 
+        
+
         JsonSerializerOptions jsonOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -18,7 +20,8 @@ public class Program
 
         try
         {
-            stationConfig = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText("C:\\Users\\Steimel_M1\\source\\repos\\MES\\Common\\Config\\StationConfig.json"), jsonOptions);
+            string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
+            stationConfig = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), jsonOptions);
             ValidateConfig.ValidateStationConfig(stationConfig);
         }
         catch (Exception e)
@@ -31,12 +34,25 @@ public class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
+        string connectionString;
+
+        try
+        {
+            connectionString = DbConnectionHelper.GetConnectionString();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return;
+        }
+
+
         // Add services to the container.
 
         builder.Services.AddControllers();
-        builder.Services.AddSingleton(stationConfig);
+        builder.Services.AddSingleton(stationConfig); // Register stationConfig so it can be used in the controller
         builder.Services.AddDbContext<DataContext>(options =>
-        options.UseSqlite("Data Source=C:\\Users\\Steimel_M1\\source\\repos\\MES\\MES\\bin\\Debug\\net9.0\\partsdata.db"));
+        options.UseSqlite(connectionString));
 
         //builder.Services.AddDbContext<DataContext>(options =>
         //    options.UseSqlite());

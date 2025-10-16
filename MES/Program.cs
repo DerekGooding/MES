@@ -8,8 +8,20 @@ internal class Program
 {
     static async Task Main(string[] args)
     {
-        DataContext context = new DataContext();
-        context.Database.EnsureDeleted();
+
+        string connectionString;
+
+        try {
+            connectionString = DbConnectionHelper.GetConnectionString();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return;
+        }
+
+        DataContext context = new DataContext(connectionString);
+        context.Database.EnsureDeleted(); //Delete and recreate database on each run for testing purposes
         context.Database.EnsureCreated();
         context.Dispose();
 
@@ -19,9 +31,11 @@ internal class Program
             PropertyNameCaseInsensitive = true
         };
 
+        //Read station configuration from the configuration file and verify the values are valid
         try
         {
-            options = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText("Config/StationConfig.json"), jsonOptions);
+            string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
+            options = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), jsonOptions);
             ValidateConfig.ValidateStationConfig(options);
         }
         catch (Exception e)
@@ -34,9 +48,12 @@ internal class Program
         List<PLCServer> servers = new List<PLCServer>();
         List<Task> serverTasks = new List<Task>();
 
+        /*Create a new server for each station defined in the configuration file and add it to a list. 
+         Also, start each server and add it to a list of Tasks*/
+        
         foreach (var option in options)
         {
-            PLCServer server = new PLCServer(option);
+            PLCServer server = new PLCServer(option, connectionString);
             servers.Add(server);
             serverTasks.Add(server.StartAsync());
         }
