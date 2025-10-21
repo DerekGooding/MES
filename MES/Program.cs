@@ -1,6 +1,8 @@
 ﻿using MES.Common;
 using MES.Data;
-using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace MES;
 
@@ -17,6 +19,7 @@ internal class Program
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+            
             return;
         }
 
@@ -25,46 +28,30 @@ internal class Program
         context.Database.EnsureCreated();
         context.Dispose();
 
-        List<StationOptions> options;
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("Logs/server_log.txt", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
 
-        JsonSerializerOptions jsonOptions = new JsonSerializerOptions {
-            PropertyNameCaseInsensitive = true
-        };
 
-        //Read station configuration from the configuration file and verify the values are valid
-        try
+        // Create the host builder for the worker service
+        var builder = Host.CreateApplicationBuilder(args);
+        // Add Serilog to the DI container
+        builder.Logging.AddSerilog(); 
+        // Tell the builder that anytime an IPLCServerFactory is requested, return a PLCServerFactory
+        builder.Services.AddSingleton<IPLCServerFactory, PLCServerFactory>();
+        // Add PLCServerService as a background (hosted) service to the DI container
+        builder.Services.AddHostedService(provider =>
         {
-            string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
-            options = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), jsonOptions);
-            ValidateConfig.ValidateStationConfig(options);
-        }
-        catch (Exception e)
-        {
+            var factory = provider.GetRequiredService<IPLCServerFactory>(); // Returns the PLCServerFactory
+            var servers = factory.CreateServers(); // Uses the factory to create the list of PLCServers
+            return new PLCServerService(servers); // Passes the list of PLCServers to the PLCServerService
+        });
 
-            Console.WriteLine($"Error loading configuration: {e.Message}");
-            return;
-        }
+        // Build and run the host
+        var host = builder.Build();
+        // Wait for the host to shutdown
+        await host.RunAsync();
 
-        List<PLCServer> servers = new List<PLCServer>();
-        List<Task> serverTasks = new List<Task>();
-
-        /*Create a new server for each station defined in the configuration file and add it to a list. 
-         Also, start each server and add it to a list of Tasks*/
-        
-        foreach (var option in options)
-        {
-            PLCServer server = new PLCServer(option, connectionString);
-            servers.Add(server);
-            serverTasks.Add(server.StartAsync());
-        }
-
-        Console.WriteLine("Press any key to exit...");
-        Console.ReadKey();
-
-        await Task.WhenAll(serverTasks);
-        foreach (var server in servers)
-        {
-            server.Dispose();
-        }
     }
 }

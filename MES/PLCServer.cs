@@ -4,6 +4,7 @@ using MES.Common;
 using MES.Common.Config.Enums;
 using MES.Data;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace MES;
 
@@ -14,54 +15,52 @@ internal class PLCServer : IDisposable
     private TcpListener _listener;
     private TcpClient _client;
     private String _name;
-    private CancellationToken _token;
-    private CancellationTokenSource _cts;
     private Dictionary<string, string> _results = new Dictionary<string, string>();
     private string _dbPath;
+    private ILogger<PLCServer> _logger;
 
 
-    public PLCServer(StationOptions options, string dbPath)
+    public PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger)
     {
         _port = int.Parse(options.Port);
         _ipAddress = IPAddress.Parse(options.IpAddress);
         _name = options.StationName;
-        _cts = new CancellationTokenSource();
-        _token = _cts.Token;
         _results = options.Results;
         _dbPath = dbPath;
+        _logger = logger;
     }
 
 
-    public async Task StartAsync()
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         try
         {
             _listener = new TcpListener(_ipAddress, _port);
             _listener.Start(1);
-            Console.WriteLine($"{_name} server started and listening on {_ipAddress.ToString()}:{_port}");
+            _logger.LogInformation($"{_name} server started and listening on {_ipAddress.ToString()}:{_port}");
 
-            while (!_token.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
                 //Dispose of previous client if it's still connected
                 _client?.Close();
 
-                _client = await _listener.AcceptTcpClientAsync(_token);
-                Console.WriteLine($"{_name} server accepted a connection.");
-                await HandleClientAsync(_client);
+                _client = await _listener.AcceptTcpClientAsync(cancellationToken);
+                _logger.LogInformation($"{_name} server accepted a connection.");
+                await HandleClientAsync(_client,cancellationToken);
 
             }
 
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine($"{_name} server: operation canceled.");
+            _logger.LogInformation($"{_name} server: operation canceled.");
         }
         catch (Exception e)
         {
 
-            if (!_cts.IsCancellationRequested)
+            if (!cancellationToken.IsCancellationRequested)
             {
-                Console.WriteLine($"{_name} server encountered an issue starting the server. {e.Message}");
+                _logger.LogError($"{_name} server encountered an issue starting the server. {e.Message}");
             }
         }
         finally
@@ -70,47 +69,47 @@ internal class PLCServer : IDisposable
         }
     }
 
-    public async Task HandleClientAsync(TcpClient client)
+    public async Task HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
     {
         byte[] buffer = new byte[1024];
 
         try
         {
             using NetworkStream stream = client.GetStream();
-            while (!_token.IsCancellationRequested)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, _token); //Listen for data from client
+                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken); //Listen for data from client
                 if (bytesRead == 0)
                 {
-                    Console.WriteLine($"{_name} server: client disconnected.");
+                    _logger.LogInformation($"{_name} server: client disconnected.");
                     break;
                 }
 
                 string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead); //Read data from client
-                Console.WriteLine($"{_name} server received: {receivedData}");
+                _logger.LogInformation($"{_name} server received: {receivedData}");
                 string parsedResponse = await ParseRequest(receivedData); //Process the data and prepare a response
 
                 byte[] response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
                 try
                 {
-                    Console.WriteLine($"{_name} server sent: {parsedResponse}");
-                    await stream.WriteAsync(response, 0, response.Length, _token); //Send response to client
+                    _logger.LogInformation($"{_name} server sent: {parsedResponse}");
+                    await stream.WriteAsync(response, 0, response.Length, cancellationToken); //Send response to client
                 }
                 catch (Exception e)
                 {
 
-                    Console.WriteLine($"{_name} server encountered an error replying to client. {e.Message}");
+                    _logger.LogError($"{_name} server encountered an error replying to client. {e.Message}");
                 }
             }
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine($"{_name} server: Read operation canceled.");
+            _logger.LogInformation($"{_name} server: Read operation canceled.");
         }
         catch (Exception e)
         {
 
-            Console.WriteLine($"{_name} server encountered an issue reading from client. {e.Message}");
+            _logger.LogError($"{_name} server encountered an issue reading from client. {e.Message}");
         }
 
 
@@ -166,7 +165,7 @@ internal class PLCServer : IDisposable
     {
         using var repository = new PartDataRepository(_dbPath);
         PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
-        Console.WriteLine($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
+        _logger.LogInformation($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
         return part != null && part.Status == PLCOperationsEnum.Good.ToString();
     }
 
@@ -246,10 +245,8 @@ internal class PLCServer : IDisposable
 
     public void Dispose()
     {
-        _cts.Cancel();
         _client?.Close();
         _listener?.Stop();
-        _cts.Dispose();
-        Console.WriteLine($"{_name} server has been stopped.");
+        _logger.LogInformation($"{_name} server has been stopped.");
     }
 }
