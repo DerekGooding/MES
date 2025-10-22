@@ -144,7 +144,7 @@ internal class PLCServer : IDisposable
         string stationName = parts[1].Trim();
         string serialNumber = parts[2].Trim();
 
-        if (operation == PLCOperationsEnum.GetStatus.ToString())
+        if (operation == nameof(PLCOperationsEnum.GetStatus))
         {
             bool status = await GetStatus(serialNumber);
             if (status)
@@ -154,7 +154,7 @@ internal class PLCServer : IDisposable
             return $"{PLCOperationsEnum.Bad}|{_name}|{serialNumber}";
         }
 
-        if (operation == PLCOperationsEnum.UpdateStatus.ToString())
+        if (operation == nameof(PLCOperationsEnum.UpdateStatus))
         {
 
             string status = parts[3].Trim();
@@ -171,7 +171,7 @@ internal class PLCServer : IDisposable
         using var repository = new PartDataRepository(_dbPath, dbLogger);
         PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
         _logger.LogInformation($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
-        return part != null && part.Status == PLCOperationsEnum.Good.ToString();
+        return part != null && part.Status == nameof(PLCOperationsEnum.Good);
     }
 
     private async Task UpdateStatus(string request)

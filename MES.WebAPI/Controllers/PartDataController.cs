@@ -49,15 +49,15 @@ public class PartDataController : ControllerBase
         string lastStationName = _stationConfig.Last().StationName;
 
         int goodParts = await _context.Parts
-            .Where(p => p.Status == PLCOperationsEnum.Good.ToString() && p.LastStationComplete == lastStationName)
+            .Where(p => p.Status == nameof(PLCOperationsEnum.Good) && p.LastStationComplete == lastStationName)
             .CountAsync();
 
         int badParts = await _context.Parts
-            .Where(p => p.Status == PLCOperationsEnum.Bad.ToString())
+            .Where(p => p.Status == nameof(PLCOperationsEnum.Bad))
             .CountAsync();
 
         int inProcessParts = await _context.Parts
-            .Where(p => p.Status == PLCOperationsEnum.Good.ToString() && p.LastStationComplete != lastStationName)
+            .Where(p => p.Status == nameof(PLCOperationsEnum.Good) && p.LastStationComplete != lastStationName)
             .CountAsync();
 
         int totalParts = goodParts + badParts;

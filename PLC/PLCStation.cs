@@ -85,7 +85,7 @@ internal class PLCStation
 
         string[] parts = response.Split('|');
 
-        return parts[0].Trim() == PLCOperationsEnum.Good.ToString();
+        return parts[0].Trim() == nameof(PLCOperationsEnum.Good);
 
     }
 
