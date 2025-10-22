@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using MES.Common.Exceptions;
+using System.Text.Json;
 
 namespace MES.Common;
 

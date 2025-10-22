@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using MES.Common.Exceptions;
+using System.Net;
 
 namespace MES.Common;
 
