@@ -26,12 +26,7 @@ public class PartDataController(DataContext context, List<StationOptions> statio
     {
         var partData = await _context.Parts.FindAsync(id);
 
-        if (partData == null)
-        {
-            return NotFound();
-        }
-
-        return partData;
+        return partData == null ? (ActionResult<PartData>)NotFound() : (ActionResult<PartData>)partData;
     }
 
     [HttpGet("PartCounts")]

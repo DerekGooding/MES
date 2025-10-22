@@ -134,11 +134,7 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
         if (operation == nameof(PLCOperationsEnum.GetStatus))
         {
             bool status = await GetStatus(serialNumber);
-            if (status)
-            {
-                return $"{PLCOperationsEnum.Good}|{_name}|{serialNumber}";
-            }
-            return $"{PLCOperationsEnum.Bad}|{_name}|{serialNumber}";
+            return status ? $"{PLCOperationsEnum.Good}|{_name}|{serialNumber}" : $"{PLCOperationsEnum.Bad}|{_name}|{serialNumber}";
         }
 
         if (operation == nameof(PLCOperationsEnum.UpdateStatus))

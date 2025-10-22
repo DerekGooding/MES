@@ -98,12 +98,9 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
             }
         }
 
-        if (resultString.Length > 0)
-        {
-            return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{_currentSerialNumber}|{GeneratePassFailResult()}:{resultString}";
-        }
-
-        return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{_currentSerialNumber}|{GeneratePassFailResult()}";
+        return resultString.Length > 0
+            ? $"{PLCOperationsEnum.UpdateStatus}|{_name}|{_currentSerialNumber}|{GeneratePassFailResult()}:{resultString}"
+            : $"{PLCOperationsEnum.UpdateStatus}|{_name}|{_currentSerialNumber}|{GeneratePassFailResult()}";
     }
 
     private int GenerateIntResult() => _random.Next(100, 150);
@@ -119,14 +116,6 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
           .Select(s => s[_random.Next(s.Length)]).ToArray());
     }
 
-    private PLCOperationsEnum GeneratePassFailResult()
-    {
-        if (_random.Next(1, 100) <= 10)
-        {
-            return PLCOperationsEnum.Bad;
-        }
-
-        return PLCOperationsEnum.Good;
-    }
+    private PLCOperationsEnum GeneratePassFailResult() => _random.Next(1, 100) <= 10 ? PLCOperationsEnum.Bad : PLCOperationsEnum.Good;
 
 }
