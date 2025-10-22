@@ -2,6 +2,7 @@
 using MES.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace MES;
@@ -28,14 +29,27 @@ internal class Program
         context.Database.EnsureCreated();
         context.Dispose();
 
+        
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
-            .WriteTo.File("Logs/server_log.txt", rollingInterval: RollingInterval.Day)
+            .WriteTo.Logger(lc => lc
+                .Filter.ByIncludingOnly(le => 
+                le.Properties.ContainsKey("SourceContext") &&
+                le.Properties["SourceContext"].ToString().Contains("PLCServer"))
+                .WriteTo.File("Logs/server_log.txt", rollingInterval: RollingInterval.Day))
+            .WriteTo.Logger(lc => lc
+                .Filter.ByIncludingOnly(le =>
+                le.Properties.ContainsKey("SourceContext") &&
+                le.Properties["SourceContext"].ToString().Contains("PartDataRepository"))
+                .WriteTo.File("Logs/db_log.txt", rollingInterval: RollingInterval.Day))
             .CreateLogger();
+
 
 
         // Create the host builder for the worker service
         var builder = Host.CreateApplicationBuilder(args);
+        // Clear default logging providers
+        builder.Logging.ClearProviders(); 
         // Add Serilog to the DI container
         builder.Logging.AddSerilog(); 
         // Tell the builder that anytime an IPLCServerFactory is requested, return a PLCServerFactory

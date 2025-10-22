@@ -1,19 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MES.Common;
+using Microsoft.Extensions.Logging;
 
 namespace MES.Data;
 
 public class PartDataRepository : IDisposable
 {
     private DataContext _context;
+    private readonly ILogger<PartDataRepository> _logger;
 
-    public PartDataRepository(string connectionString)
+    public PartDataRepository(string connectionString, ILogger<PartDataRepository> logger)
     {
         _context = new DataContext(connectionString);
+        _logger = logger;
     }
 
     public async Task AddPartDataAsync(PartData partData)
     {
+        _logger.LogInformation("DB add part request: {SerialNumber}", partData.SerialNumber);
         await _context.Parts.AddAsync(partData);
         await _context.SaveChangesAsync();
     }
@@ -21,17 +25,19 @@ public class PartDataRepository : IDisposable
 
     public async Task<PartData?> GetPartDataByIdAsync(int partId)
     {
+        _logger.LogInformation("DB get part by ID request: {PartId}", partId);
         return await _context.Parts.FindAsync(partId);
     }
 
     public async Task<PartData?> GetPartDataBySerialNumberAsync(string serialNumber)
     {
-        //return await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == serialNumber);
+        _logger.LogInformation("DB get part by Serial Number request: {SerialNumber}", serialNumber);
         return await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == serialNumber);
     }
 
     public async Task UpdatePartDataAsync(PartData partData)
     {
+        _logger.LogInformation("DB update part request: {SerialNumber}", partData.SerialNumber);
         PartData existingPart = await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == partData.SerialNumber);
         if (existingPart == null)
         {

@@ -5,6 +5,7 @@ using MES.Common.Config.Enums;
 using MES.Data;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MES;
 
@@ -18,9 +19,10 @@ internal class PLCServer : IDisposable
     private Dictionary<string, string> _results = new Dictionary<string, string>();
     private string _dbPath;
     private ILogger<PLCServer> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
 
-    public PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger)
+    public PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger, IServiceProvider serviceProvider)
     {
         _port = int.Parse(options.Port);
         _ipAddress = IPAddress.Parse(options.IpAddress);
@@ -28,6 +30,7 @@ internal class PLCServer : IDisposable
         _results = options.Results;
         _dbPath = dbPath;
         _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
 
@@ -163,7 +166,8 @@ internal class PLCServer : IDisposable
 
     private async Task<bool>  GetStatus(string serialNumber)
     {
-        using var repository = new PartDataRepository(_dbPath);
+        var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
+        using var repository = new PartDataRepository(_dbPath, dbLogger);
         PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
         _logger.LogInformation($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
         return part != null && part.Status == PLCOperationsEnum.Good.ToString();
@@ -176,7 +180,8 @@ internal class PLCServer : IDisposable
         string stationName = parts[1].Trim();
         string serialNumber = parts[2].Trim();
         string status = parts[3].Trim();
-        using var repository = new PartDataRepository(_dbPath);
+        var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
+        using var repository = new PartDataRepository(_dbPath, dbLogger);
 
         PartData part = new PartData
         {
