@@ -7,7 +7,7 @@ namespace MES.Data.Repositories;
 
 public class PartDataRepository(string connectionString, ILogger<PartDataRepository> logger) : IDisposable
 {
-    private DataContext _context = new DataContext(connectionString);
+    private DataContext _context = new(connectionString);
     private readonly ILogger<PartDataRepository> _logger = logger;
 
     public async Task AddPartDataAsync(PartData partData)

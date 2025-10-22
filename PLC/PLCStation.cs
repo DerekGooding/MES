@@ -8,7 +8,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
 
     public event Action Completed;
 
-    private PLCClient _client = new PLCClient(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
+    private PLCClient _client = new(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
     private string _name = clientOptions.StationName;
     private List<string> _serialNumbers = serialNumberList;
     private int _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
