@@ -31,7 +31,7 @@ public static class ValidateConfig
             {
                 foreach (var kvp in option.Results)
                 {
-                    string dataType = kvp.Value.ToLower();
+                    var dataType = kvp.Value.ToLower();
 
                     if (string.IsNullOrEmpty(kvp.Key) || !char.IsLetter(kvp.Key[0]))
                     {
@@ -77,11 +77,11 @@ public static class ValidateConfig
             {
                 throw new InvalidConfigurationException("Station name cannot be empty or whitespace. Check configuration in ClientSimulationConfig.json file");
             }
-            if (!int.TryParse(option.MinCycleTime, out int minCycleTime) || minCycleTime < 0)
+            if (!int.TryParse(option.MinCycleTime, out var minCycleTime) || minCycleTime < 0)
             {
                 throw new InvalidConfigurationException($"{option.StationName} MinCycleTime '{option.MinCycleTime}' is not a valid non-negative integer. Check configuration in ClientSimulationConfig.json file");
             }
-            if (!int.TryParse(option.MaxCycleTimel, out int maxCycleTime) || maxCycleTime < 0)
+            if (!int.TryParse(option.MaxCycleTimel, out var maxCycleTime) || maxCycleTime < 0)
             {
                 throw new InvalidConfigurationException($"{option.StationName} MaxCycleTime '{option.MaxCycleTimel}' is not a valid non-negative integer. Check configuration in ClientSimulationConfig.json file");
             }
@@ -126,7 +126,7 @@ public static class ValidateConfig
 
         var indices = clientOptions.ConvertAll(o => int.Parse(o.SerialNumberArrayIndex));
 
-        for (int i = 0; i < indices.Count; i++)
+        for (var i = 0; i < indices.Count; i++)
         {
             if (indices[i] != i)
             {

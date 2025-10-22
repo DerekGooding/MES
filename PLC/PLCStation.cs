@@ -6,23 +6,23 @@ namespace MES.PLC;
 internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions clientOptions, List<string> serialNumberList)
 {
 
-    public event Action Completed;
+    public event Action? Completed;
 
-    private PLCClient _client = new(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
-    private string _name = clientOptions.StationName;
-    private List<string> _serialNumbers = serialNumberList;
-    private int _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
-    private string _currentSerialNumber;
-    private int _minCycleTime = int.Parse(clientOptions.MinCycleTime);
-    private int _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
-    private Random _random = Random.Shared;
-    private Dictionary<string, string> _results = stationOptions.Results;
+    private readonly PLCClient _client = new(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
+    private readonly string _name = clientOptions.StationName;
+    private readonly List<string> _serialNumbers = serialNumberList;
+    private readonly int _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
+    private string? _currentSerialNumber;
+    private readonly int _minCycleTime = int.Parse(clientOptions.MinCycleTime);
+    private readonly int _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
+    private readonly Random _random = Random.Shared;
+    private readonly Dictionary<string, string> _results = stationOptions.Results;
 
     public async Task StartAsync()
     {
         if (_snArrayIndex < _serialNumbers.Count)
         {
-            string statusResponse = string.Empty;
+            var statusResponse = string.Empty;
             _currentSerialNumber = _serialNumbers[_snArrayIndex];
             if (!_client.IsConnected())
             {
@@ -38,7 +38,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
             if (EvaluateStatusResponse(statusResponse) || _snArrayIndex == 0)
             {
                 await Task.Delay(_random.Next(_minCycleTime, _maxCycleTime)); //Simulate variable cycle time of the physical station
-                string updateMessage = FormatUpdateMessage();
+                var updateMessage = FormatUpdateMessage();
                 await ReadWriteAsync(updateMessage);
             }
             else
@@ -51,7 +51,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
         Completed?.Invoke(); // Notify the coordinator that this station has completed its cycle
     }
 
-    public async Task<string> ReadWriteAsync(string dataToSend) => await _client.SendReceiveAsync(dataToSend);
+    public async Task<string> ReadWriteAsync(string dataToSend) => await _client.SendReceiveAsync(dataToSend) ?? "<error>";
 
     private string FormatStatusCheckMessage() => $"{PLCOperationsEnum.GetStatus}|{_name}|{_currentSerialNumber}";
 
@@ -62,7 +62,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
             return false;
         }
 
-        string[] parts = response.Split('|');
+        var parts = response.Split('|');
 
         return parts[0].Trim() == nameof(PLCOperationsEnum.Good);
 
@@ -70,11 +70,11 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
 
     private string FormatUpdateMessage()
     {
-        string resultString = "";
+        var resultString = "";
 
         foreach (var result in _results)
         {
-            string dataType = result.Value.ToLower();
+            var dataType = result.Value.ToLower();
 
             switch (dataType)
             {

@@ -3,9 +3,9 @@
 public class PartData
 {
     public int PartId { get; set; }
-    public string SerialNumber { get; set; }
-    public string LastStationComplete { get; set; }
-    public string Status { get; set; }
+    public string SerialNumber { get; set; } = string.Empty;
+    public string LastStationComplete { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
     public DateTime Timestamp { get; set; }
     public float? VisionMeasurement { get; set; }
     public float? PasteDispenseWeight { get; set; }

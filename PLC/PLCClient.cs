@@ -6,12 +6,12 @@ namespace MES.PLC;
 
 internal class PLCClient : IDisposable
 {
-    private string _ipAddress;
-    private int _port;
-    private string _name;
-    private TcpClient _client;
-    private CancellationTokenSource _cts;
-    private CancellationToken _token;
+    private readonly string _ipAddress;
+    private readonly int _port;
+    private readonly string _name;
+    private TcpClient? _client;
+    private readonly CancellationTokenSource _cts;
+    private readonly CancellationToken _token;
 
     public PLCClient(string ipAddress, int port, string name)
     {
@@ -41,25 +41,25 @@ internal class PLCClient : IDisposable
         }
     }
 
-    public async Task<string> SendReceiveAsync(string data)
+    public async Task<string?> SendReceiveAsync(string data)
     {
         try
         {
-            if (_client == null || !_client.Connected)
+            if (_client?.Connected != true)
             {
                 Console.WriteLine($"{_name} client is not connected to the server.");
                 return null;
             }
-            NetworkStream stream = _client.GetStream();
+            var stream = _client.GetStream();
             stream.ReadTimeout = 5000;
             // Send data
-            byte[] sendData = System.Text.Encoding.ASCII.GetBytes(data);
-            await stream.WriteAsync(sendData, 0, sendData.Length, _token);
+            var sendData = System.Text.Encoding.ASCII.GetBytes(data);
+            await stream.WriteAsync(sendData, _token);
             Console.WriteLine($"{_name} client sent: {data}");
             // Receive response
-            byte[] receiveData = new byte[256];
-            int bytesRead = await stream.ReadAsync(receiveData, 0, receiveData.Length, _token);
-            string responseData = System.Text.Encoding.ASCII.GetString(receiveData, 0, bytesRead);
+            var receiveData = new byte[256];
+            var bytesRead = await stream.ReadAsync(receiveData, _token);
+            var responseData = System.Text.Encoding.ASCII.GetString(receiveData, 0, bytesRead);
             Console.WriteLine($"{_name} client received: {responseData}");
             return responseData;
 
@@ -76,7 +76,7 @@ internal class PLCClient : IDisposable
         return null;
     }
 
-    public bool IsConnected() => _client != null && _client.Connected;
+    public bool IsConnected() => _client?.Connected == true;
 
     public void Dispose()
     {

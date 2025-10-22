@@ -7,7 +7,7 @@ using Serilog;
 
 namespace MES;
 
-internal class Program
+internal static class Program
 {
     static async Task Main(string[] args)
     {
@@ -25,7 +25,7 @@ internal class Program
             return;
         }
 
-        DataContext context = new DataContext(connectionString);
+        var context = new DataContext(connectionString);
         context.Database.EnsureDeleted(); //Delete and recreate database on each run for testing purposes
         context.Database.EnsureCreated();
         context.Dispose();

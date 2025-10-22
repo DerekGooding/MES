@@ -32,23 +32,23 @@ public class PartDataController(DataContext context, List<StationOptions> statio
     [HttpGet("PartCounts")]
     public async Task<ActionResult<PartCountDto>> GetPartCounts()
     {
-        string lastStationName = _stationConfig.Last().StationName;
+        var lastStationName = _stationConfig[^1].StationName;
 
-        int goodParts = await _context.Parts
+        var goodParts = await _context.Parts
             .Where(p => p.Status == nameof(PLCOperationsEnum.Good) && p.LastStationComplete == lastStationName)
             .CountAsync();
 
-        int badParts = await _context.Parts
+        var badParts = await _context.Parts
             .Where(p => p.Status == nameof(PLCOperationsEnum.Bad))
             .CountAsync();
 
-        int inProcessParts = await _context.Parts
+        var inProcessParts = await _context.Parts
             .Where(p => p.Status == nameof(PLCOperationsEnum.Good) && p.LastStationComplete != lastStationName)
             .CountAsync();
 
-        int totalParts = goodParts + badParts;
+        var totalParts = goodParts + badParts;
 
-        PartCountDto partCount = new PartCountDto
+        var partCount = new PartCountDto
         {
             TotalParts = totalParts,
             GoodParts = goodParts,
@@ -71,7 +71,7 @@ public class PartDataController(DataContext context, List<StationOptions> statio
         {
             return NotFound();
         }
-        PartDataDto partDataDto = new PartDataDto
+        var partDataDto = new PartDataDto
         {
             SerialNumber = partData.SerialNumber,
             LastStationComplete = partData.LastStationComplete,
@@ -106,16 +106,9 @@ public class PartDataController(DataContext context, List<StationOptions> statio
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException) when (!PartDataExists(id))
         {
-            if (!PartDataExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            return NotFound();
         }
 
         return NoContent();
@@ -150,16 +143,9 @@ public class PartDataController(DataContext context, List<StationOptions> statio
         {
             await _context.SaveChangesAsync();
         }
-        catch (DbUpdateConcurrencyException)
+        catch (DbUpdateConcurrencyException) when (!PartDataExists(existingPartData.PartId))
         {
-            if (!PartDataExists(existingPartData.PartId))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            return NotFound();
         }
         return NoContent();
     }

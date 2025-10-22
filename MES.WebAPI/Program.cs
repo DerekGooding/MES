@@ -5,23 +5,18 @@ using System.Text.Json;
 
 namespace MES.WebAPI;
 
-public class Program
+public static class Program
 {
+    private static readonly JsonSerializerOptions _jsonOptions = new(){ PropertyNameCaseInsensitive = true };
+
     public static void Main(string[] args)
     {
-        List<StationOptions> stationConfig;
-
-        
-
-        JsonSerializerOptions jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+        List<StationOptions> stationConfig = [];
 
         try
         {
-            string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
-            stationConfig = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), jsonOptions);
+            var optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
+            stationConfig = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), _jsonOptions) ?? [];
             ValidateConfig.ValidateStationConfig(stationConfig);
         }
         catch (Exception e)

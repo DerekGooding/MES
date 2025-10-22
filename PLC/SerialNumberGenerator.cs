@@ -4,23 +4,23 @@ namespace MES.PLC;
 
 internal class SerialNumberGenerator(string prefix, int seedNumber, int digitCount, int serialNumberCount)
 {
-    private string _prefix = prefix;
-    private int _seedNumber = seedNumber;
-    private int _digitCount = digitCount;
-    private int _serialCount = serialNumberCount;
+    private readonly string _prefix = prefix;
+    private readonly int _seedNumber = seedNumber;
+    private readonly int _digitCount = digitCount;
+    private readonly int _serialCount = serialNumberCount;
     public List<string> serialNumbers = [];
 
     public List<string> GenerateSerialNumbers()
     {
         if (serialNumbers.Count == 0)
         {
-            string serialNumber = _prefix + PadNumber(_seedNumber);
+            var serialNumber = _prefix + PadNumber(_seedNumber);
             serialNumbers.Add(serialNumber);
         }
         else
         {
-            int lastNumber = int.Parse(serialNumbers.First().Substring(_prefix.Length));
-            string serialNumber = _prefix + PadNumber(lastNumber + 1);
+            var lastNumber = int.Parse(serialNumbers[0][_prefix.Length..]);
+            var serialNumber = _prefix + PadNumber(lastNumber + 1);
             serialNumbers.Insert(0, serialNumber);
 
             if (serialNumbers.Count > _serialCount)

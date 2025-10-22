@@ -9,8 +9,8 @@ namespace MES;
 
 internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serviceProvider) : IPLCServerFactory
 {
-    private List<StationOptions> _stationOptions;
-    private string _connectionString;
+    private List<StationOptions> _stationOptions = [];
+    private string _connectionString = string.Empty;
     private readonly ILogger<PLCServer> _logger = logger;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
@@ -20,7 +20,7 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
         List<PLCServer> servers = [];
         LoadStationConfig();
         var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
-        foreach (StationOptions option in _stationOptions)
+        foreach (var option in _stationOptions)
         {
             servers.Add(new PLCServer(option, _connectionString, _logger, _serviceProvider));
         }
@@ -33,8 +33,8 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
 
         try
         {
-            string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
-            _stationOptions = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), _jsonOptions);
+            var optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
+            _stationOptions = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), _jsonOptions) ?? [];
             ValidateConfig.ValidateStationConfig(_stationOptions);
             _connectionString = DbConnectionHelper.GetConnectionString();
 

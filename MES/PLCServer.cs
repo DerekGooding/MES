@@ -12,14 +12,14 @@ namespace MES;
 
 internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger, IServiceProvider serviceProvider) : IDisposable
 {
-    private IPAddress _ipAddress = IPAddress.Parse(options.IpAddress);
-    private int _port = int.Parse(options.Port);
-    private TcpListener _listener;
-    private TcpClient _client;
-    private string _name = options.StationName;
-    private Dictionary<string, string> _results = options.Results;
-    private string _dbPath = dbPath;
-    private ILogger<PLCServer> _logger = logger;
+    private readonly IPAddress _ipAddress = IPAddress.Parse(options.IpAddress);
+    private readonly int _port = int.Parse(options.Port);
+    private TcpListener? _listener;
+    private TcpClient? _client;
+    private readonly string _name = options.StationName;
+    private readonly Dictionary<string, string> _results = options.Results;
+    private readonly string _dbPath = dbPath;
+    private readonly ILogger<PLCServer> _logger = logger;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -62,25 +62,25 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
 
     public async Task HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
     {
-        byte[] buffer = new byte[1024];
+        var buffer = new byte[1024];
 
         try
         {
-            await using NetworkStream stream = client.GetStream();
+            await using var stream = client.GetStream();
             while (!cancellationToken.IsCancellationRequested)
             {
-                int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken); //Listen for data from client
+                var bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken); //Listen for data from client
                 if (bytesRead == 0)
                 {
                     _logger.LogInformation("{Station} server: client disconnected.", _name);
                     break;
                 }
 
-                string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead); //Read data from client
+                var receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead); //Read data from client
                 _logger.LogInformation("{Station} server received: {ReceivedData}", _name, receivedData);
-                string parsedResponse = await ParseRequest(receivedData); //Process the data and prepare a response
+                var parsedResponse = await ParseRequest(receivedData); //Process the data and prepare a response
 
-                byte[] response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
+                var response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
                 try
                 {
                     _logger.LogInformation("{Station} server sent: {ParsedResponse}", _name, parsedResponse);
@@ -117,26 +117,26 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
          */
 
 
-        string[] parts = request.Split('|');
+        var parts = request.Split('|');
 
         if (parts.Length < 3)
         {
             return $"{_name} received invalid request format: {request}";
         }
-        string operation = parts[0].Trim();
-        string stationName = parts[1].Trim();
-        string serialNumber = parts[2].Trim();
+        var operation = parts[0].Trim();
+        var stationName = parts[1].Trim();
+        var serialNumber = parts[2].Trim();
 
         if (operation == nameof(PLCOperationsEnum.GetStatus))
         {
-            bool status = await GetStatus(serialNumber);
+            var status = await GetStatus(serialNumber);
             return status ? $"{PLCOperationsEnum.Good}|{_name}|{serialNumber}" : $"{PLCOperationsEnum.Bad}|{_name}|{serialNumber}";
         }
 
         if (operation == nameof(PLCOperationsEnum.UpdateStatus))
         {
 
-            string status = parts[3].Trim();
+            var status = parts[3].Trim();
             await UpdateStatus(request);
             return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{status}";
         }
@@ -148,22 +148,22 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
     {
         var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
         using var repository = new PartDataRepository(_dbPath, dbLogger);
-        PartData? part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
+        var part = await repository.GetPartDataBySerialNumberAsync(serialNumber);
         _logger.LogInformation($"{_name} server checked status for Serial Number: {serialNumber}, Status: {part?.Status}");
-        return part != null && part.Status == nameof(PLCOperationsEnum.Good);
+        return part?.Status == nameof(PLCOperationsEnum.Good);
     }
 
     private async Task UpdateStatus(string request)
     {
-        string[] parts = request.Split('|', ':');
-        string operation = parts[0].Trim();
-        string stationName = parts[1].Trim();
-        string serialNumber = parts[2].Trim();
-        string status = parts[3].Trim();
+        var parts = request.Split('|', ':');
+        var operation = parts[0].Trim();
+        var stationName = parts[1].Trim();
+        var serialNumber = parts[2].Trim();
+        var status = parts[3].Trim();
         var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
         using var repository = new PartDataRepository(_dbPath, dbLogger);
 
-        PartData part = new PartData
+        var part = new PartData
         {
             SerialNumber = serialNumber,
             Status = status,
@@ -181,37 +181,34 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
 
         foreach (var result in _results) // Loop through each expected result defined in the configuration
         {
-            string dataType = result.Value.ToLower(); // Get the data type of the result (int, real, bool, string)
-            string key = result.Key; // Get the key of the result (e.g., VisionMeasurement, PasteDispenseWeight, etc.)
-            int index = Array.IndexOf(parts, key); // Find the index of the key in the parts array
+            var dataType = result.Value.ToLower(); // Get the data type of the result (int, real, bool, string)
+            var key = result.Key; // Get the key of the result (e.g., VisionMeasurement, PasteDispenseWeight, etc.)
+            var index = Array.IndexOf(parts, key); // Find the index of the key in the parts array
 
             if (index != -1 && index + 1 < parts.Length) // If the key is found and there is a value following it
             {
                 foreach (var property in properties) // Loop through each property of the PartData class
                 {
-                    string propertyName = property.Name; // Get the name of the property
-                    string value = parts[index + 1].Trim(); // Get the value associated with the key
+                    var propertyName = property.Name; // Get the name of the property
+                    var value = parts[index + 1].Trim(); // Get the value associated with the key
                     if (propertyName == key) // If the property name matches the key
                     {
                         switch (dataType) // Set the property value based on the data type
                         {
                             case "int":
-                                int intValue;
-                                if (int.TryParse(value, out intValue))
+                                if (int.TryParse(value, out var intValue))
                                 {
                                     property.SetValue(part, intValue);
                                 }
                                 break;
                             case "real":
-                                float floatValue;
-                                if (float.TryParse(value, out floatValue))
+                                if (float.TryParse(value, out var floatValue))
                                 {
                                     property.SetValue(part, floatValue);
                                 }
                                 break;
                             case "bool":
-                                bool boolValue;
-                                if (bool.TryParse(value, out boolValue))
+                                if (bool.TryParse(value, out var boolValue))
                                 {
                                     property.SetValue(part, boolValue);
                                 }

@@ -5,7 +5,7 @@ namespace MES.PLC;
 internal class Coordinator(IEnumerable<PLCStation> stations)
 {
     private int _remainingStations;
-    private IEnumerable<PLCStation> _stations = stations;
+    private readonly IEnumerable<PLCStation> _stations = stations;
 
     public async Task Coordinate()
     {

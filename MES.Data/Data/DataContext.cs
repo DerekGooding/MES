@@ -6,12 +6,9 @@ namespace MES.Data.Data;
 public class DataContext : DbContext
 {
     public DbSet<PartData> Parts { get; set; }
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
 
-    public DataContext(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
+    public DataContext(string connectionString) => _connectionString = connectionString;
     public DataContext(DbContextOptions<DataContext> options)
         : base(options)
     {

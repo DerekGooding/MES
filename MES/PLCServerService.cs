@@ -5,8 +5,8 @@ namespace MES;
 
 internal class PLCServerService(List<PLCServer> servers) : BackgroundService
 {
-    private List<PLCServer> _servers = servers;
-    private List<Task> _serverTasks = [];
+    private readonly List<PLCServer> _servers = servers;
+    private readonly List<Task> _serverTasks = [];
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -7,7 +7,7 @@ namespace MES.Data.Repositories;
 
 public class PartDataRepository(string connectionString, ILogger<PartDataRepository> logger) : IDisposable
 {
-    private DataContext _context = new(connectionString);
+    private readonly DataContext _context = new(connectionString);
     private readonly ILogger<PartDataRepository> _logger = logger;
 
     public async Task AddPartDataAsync(PartData partData)
@@ -35,7 +35,9 @@ public class PartDataRepository(string connectionString, ILogger<PartDataReposit
         _logger.LogInformation("DB update part request: {SerialNumber}", partData.SerialNumber);
         var existingPart = await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == partData.SerialNumber);
         if (existingPart == null)
+        {
             await _context.Parts.AddAsync(partData);
+        }
         else
         {
             existingPart.LastStationComplete = partData.LastStationComplete;
