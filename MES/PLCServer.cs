@@ -66,44 +66,40 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
 
         try
         {
-            using NetworkStream stream = client.GetStream();
+            await using NetworkStream stream = client.GetStream();
             while (!cancellationToken.IsCancellationRequested)
             {
                 int bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken); //Listen for data from client
                 if (bytesRead == 0)
                 {
-                    _logger.LogInformation($"{_name} server: client disconnected.");
+                    _logger.LogInformation("{Station} server: client disconnected.", _name);
                     break;
                 }
 
                 string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead); //Read data from client
-                _logger.LogInformation($"{_name} server received: {receivedData}");
+                _logger.LogInformation("{Station} server received: {ReceivedData}", _name, receivedData);
                 string parsedResponse = await ParseRequest(receivedData); //Process the data and prepare a response
 
                 byte[] response = System.Text.Encoding.ASCII.GetBytes(parsedResponse);
                 try
                 {
-                    _logger.LogInformation($"{_name} server sent: {parsedResponse}");
+                    _logger.LogInformation("{Station} server sent: {ParsedResponse}", _name, parsedResponse);
                     await stream.WriteAsync(response, 0, response.Length, cancellationToken); //Send response to client
                 }
                 catch (Exception e)
                 {
-
-                    _logger.LogError($"{_name} server encountered an error replying to client. {e.Message}");
+                    _logger.LogError(e, "{Station} server encountered an error replying to client.", _name);
                 }
             }
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation($"{_name} server: Read operation canceled.");
+            _logger.LogInformation("{Station} server: Read operation canceled.", _name);
         }
         catch (Exception e)
         {
-
-            _logger.LogError($"{_name} server encountered an issue reading from client. {e.Message}");
+            _logger.LogError(e, "{Station} server encountered an issue reading from client.", _name);
         }
-
-
     }
 
     private async Task<string> ParseRequest(string request)
