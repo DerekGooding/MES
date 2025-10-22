@@ -1,6 +1,6 @@
 ﻿
 using MES.Common;
-using MES.Data;
+using MES.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;

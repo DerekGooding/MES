@@ -1,8 +1,9 @@
-﻿using MES.Common;
+﻿using MES.Common.Models;
+using MES.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace MES.Data;
+namespace MES.Data.Repositories;
 
 public class PartDataRepository : IDisposable
 {
@@ -38,12 +39,9 @@ public class PartDataRepository : IDisposable
     public async Task UpdatePartDataAsync(PartData partData)
     {
         _logger.LogInformation("DB update part request: {SerialNumber}", partData.SerialNumber);
-        PartData existingPart = await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == partData.SerialNumber);
+        var existingPart = await _context.Parts.FirstOrDefaultAsync(p => p.SerialNumber == partData.SerialNumber);
         if (existingPart == null)
-        {
             await _context.Parts.AddAsync(partData);
-
-        }
         else
         {
             existingPart.LastStationComplete = partData.LastStationComplete;

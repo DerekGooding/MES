@@ -1,7 +1,7 @@
-﻿using MES.Common;
+﻿using MES.Common.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MES.Data;
+namespace MES.Data.Data;
 
 public class DataContext : DbContext
 {
@@ -19,12 +19,8 @@ public class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         if (!options.IsConfigured)
-        {
 
             options.UseSqlite(_connectionString);
-
-
-        }
 
     }
 

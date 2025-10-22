@@ -1,5 +1,4 @@
-﻿
-namespace MES.Common;
+﻿namespace MES.Common.Models;
 
 public class PartCountDto
 {

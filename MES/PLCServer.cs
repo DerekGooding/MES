@@ -1,6 +1,7 @@
 ﻿using MES.Common;
 using MES.Common.Config.Enums;
-using MES.Data;
+using MES.Common.Models;
+using MES.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net;
