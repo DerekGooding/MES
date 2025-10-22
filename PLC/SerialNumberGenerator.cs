@@ -2,22 +2,13 @@
 
 namespace MES.PLC;
 
-internal class SerialNumberGenerator
+internal class SerialNumberGenerator(string prefix, int seedNumber, int digitCount, int serialNumberCount)
 {
-    private string _prefix;
-    private int _seedNumber;
-    private int _digitCount;
-    private int _serialCount = 0;
+    private string _prefix = prefix;
+    private int _seedNumber = seedNumber;
+    private int _digitCount = digitCount;
+    private int _serialCount = serialNumberCount;
     public List<string> serialNumbers = new List<string>();
-
-    public SerialNumberGenerator(string prefix, int seedNumber, int digitCount, int serialNumberCount)
-    {
-        _prefix = prefix;
-        _seedNumber = seedNumber;
-        _digitCount = digitCount;
-        _serialCount = serialNumberCount;
-
-    }
 
     public List<string> GenerateSerialNumbers()
     {

@@ -10,30 +10,17 @@ using System.Reflection;
 
 namespace MES;
 
-internal class PLCServer : IDisposable
+internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger, IServiceProvider serviceProvider) : IDisposable
 {
-    private IPAddress _ipAddress;
-    private int _port;
+    private IPAddress _ipAddress = IPAddress.Parse(options.IpAddress);
+    private int _port = int.Parse(options.Port);
     private TcpListener _listener;
     private TcpClient _client;
-    private String _name;
-    private Dictionary<string, string> _results = new Dictionary<string, string>();
-    private string _dbPath;
-    private ILogger<PLCServer> _logger;
-    private readonly IServiceProvider _serviceProvider;
-
-
-    public PLCServer(StationOptions options, string dbPath, ILogger<PLCServer> logger, IServiceProvider serviceProvider)
-    {
-        _port = int.Parse(options.Port);
-        _ipAddress = IPAddress.Parse(options.IpAddress);
-        _name = options.StationName;
-        _results = options.Results;
-        _dbPath = dbPath;
-        _logger = logger;
-        _serviceProvider = serviceProvider;
-    }
-
+    private String _name = options.StationName;
+    private Dictionary<string, string> _results = options.Results;
+    private string _dbPath = dbPath;
+    private ILogger<PLCServer> _logger = logger;
+    private readonly IServiceProvider _serviceProvider = serviceProvider;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {

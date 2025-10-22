@@ -3,16 +3,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace MES;
 
-internal class PLCServerService : BackgroundService
+internal class PLCServerService(List<PLCServer> servers) : BackgroundService
 {
-    private List<PLCServer> _servers;
-    private List<Task> _serverTasks;
-
-    public PLCServerService(List<PLCServer> servers)
-    {
-        _servers = servers;
-        _serverTasks = new List<Task>();
-    }
+    private List<PLCServer> _servers = servers;
+    private List<Task> _serverTasks = new List<Task>();
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

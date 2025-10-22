@@ -3,33 +3,20 @@ using MES.Common.Config.Enums;
 
 namespace MES.PLC;
 
-internal class PLCStation
+internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions clientOptions, List<string> serialNumberList)
 {
 
     public event Action Completed;
 
-    private PLCClient _client;
-    private string _name;
-    private List<string> _serialNumbers;
-    private int _snArrayIndex = 0;
+    private PLCClient _client = new PLCClient(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
+    private string _name = clientOptions.StationName;
+    private List<string> _serialNumbers = serialNumberList;
+    private int _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
     private string _currentSerialNumber;
-    private int _minCycleTime;
-    private int _maxCycleTime;
+    private int _minCycleTime = int.Parse(clientOptions.MinCycleTime);
+    private int _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
     private Random _random = new Random();
-    private Dictionary<string, string> _results;
-
-
-
-    public PLCStation(StationOptions stationOptions, ClientSimulationOptions clientOptions, List<string> serialNumberList)
-    {
-        _client = new PLCClient(stationOptions.IpAddress, int.Parse(stationOptions.Port), stationOptions.StationName);
-        _name = clientOptions.StationName;
-        _serialNumbers = serialNumberList;
-        _snArrayIndex = int.Parse(clientOptions.SerialNumberArrayIndex);
-        _minCycleTime = int.Parse(clientOptions.MinCycleTime);
-        _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
-        _results = stationOptions.Results;
-    }
+    private Dictionary<string, string> _results = stationOptions.Results;
 
     public async Task StartAsync()
     {

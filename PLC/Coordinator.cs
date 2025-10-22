@@ -2,15 +2,10 @@
 
 namespace MES.PLC;
 
-internal class Coordinator
+internal class Coordinator(IEnumerable<PLCStation> stations)
 {
     private int _remainingStations;
-    private IEnumerable<PLCStation> _stations;
-
-    public Coordinator(IEnumerable<PLCStation> stations)
-    {
-        _stations = stations;
-    }
+    private IEnumerable<PLCStation> _stations = stations;
 
     public async Task Coordinate()
     {

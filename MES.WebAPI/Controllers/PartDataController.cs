@@ -10,16 +10,10 @@ namespace MES.WebAPI.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class PartDataController : ControllerBase
+public class PartDataController(DataContext context, List<StationOptions> stationConfig) : ControllerBase
 {
-    private readonly DataContext _context;
-    private readonly List<StationOptions> _stationConfig;
-
-    public PartDataController(DataContext context, List<StationOptions> stationConfig)
-    {
-        _context = context;
-        _stationConfig = stationConfig;
-    }
+    private readonly DataContext _context = context;
+    private readonly List<StationOptions> _stationConfig = stationConfig;
 
 
     // GET: api/PartData
