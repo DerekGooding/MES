@@ -5,7 +5,7 @@ namespace MES.Common;
 
 public static class ValidateConfig
 {
-    private static readonly string[] _validDataTypes = { "string", "integer", "real", "bool" };
+    private static readonly string[] _validDataTypes = ["string", "integer", "real", "bool"];
     public static void ValidateStationConfig(List<StationOptions> options)
     {
 

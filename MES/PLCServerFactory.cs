@@ -16,7 +16,7 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
 
     public List<PLCServer> CreateServers()
     {
-        List<PLCServer> servers = new List<PLCServer>();
+        List<PLCServer> servers = [];
         LoadStationConfig();
         var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
         foreach (StationOptions option in _stationOptions)
@@ -28,7 +28,7 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
 
     private void LoadStationConfig()
     {
-        _stationOptions = new List<StationOptions>();
+        _stationOptions = [];
 
         JsonSerializerOptions jsonOptions = new JsonSerializerOptions
         {

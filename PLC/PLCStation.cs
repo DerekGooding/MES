@@ -112,8 +112,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
     private string GenerateStringResult()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, 8)
-          .Select(s => s[_random.Next(s.Length)]).ToArray());
+        return new string([.. Enumerable.Repeat(chars, 8).Select(s => s[_random.Next(s.Length)])]);
     }
 
     private PLCOperationsEnum GeneratePassFailResult() => _random.Next(1, 100) <= 10 ? PLCOperationsEnum.Bad : PLCOperationsEnum.Good;

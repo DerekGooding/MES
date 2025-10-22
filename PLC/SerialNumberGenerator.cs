@@ -8,7 +8,7 @@ internal class SerialNumberGenerator(string prefix, int seedNumber, int digitCou
     private int _seedNumber = seedNumber;
     private int _digitCount = digitCount;
     private int _serialCount = serialNumberCount;
-    public List<string> serialNumbers = new();
+    public List<string> serialNumbers = [];
 
     public List<string> GenerateSerialNumbers()
     {

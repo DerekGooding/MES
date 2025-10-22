@@ -39,7 +39,7 @@ internal class Program
         /* Create a PLC station for each station defined in the configuration file and add it to a list. The station is
          * what simulates the physical station on the manufacturing line.
          */
-        List<PLCStation> stations = new List<PLCStation>();
+        List<PLCStation> stations = [];
 
         foreach (var stationOption in stationOptions)
         {
