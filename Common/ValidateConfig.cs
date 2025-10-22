@@ -124,7 +124,7 @@ public static class ValidateConfig
         }
 
 
-        var indices = clientOptions.Select(o => int.Parse(o.SerialNumberArrayIndex)).ToList();
+        var indices = clientOptions.ConvertAll(o => int.Parse(o.SerialNumberArrayIndex));
 
         for (int i = 0; i < indices.Count; i++)
         {
