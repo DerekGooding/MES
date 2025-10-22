@@ -34,8 +34,5 @@ internal class Coordinator
         }
     }
 
-    public void Reset()
-    {
-        _remainingStations = _stations.Count();
-    }
+    public void Reset() => _remainingStations = _stations.Count();
 }

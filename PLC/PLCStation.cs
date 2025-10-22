@@ -64,17 +64,9 @@ internal class PLCStation
         Completed?.Invoke(); // Notify the coordinator that this station has completed its cycle
     }
 
-    public async Task<string> ReadWriteAsync(string dataToSend)
-    {
+    public async Task<string> ReadWriteAsync(string dataToSend) => await _client.SendReceiveAsync(dataToSend);
 
-        return await _client.SendReceiveAsync(dataToSend);
-
-    }
-
-    private string FormatStatusCheckMessage()
-    {
-        return $"{PLCOperationsEnum.GetStatus}|{_name}|{_currentSerialNumber}";
-    }
+    private string FormatStatusCheckMessage() => $"{PLCOperationsEnum.GetStatus}|{_name}|{_currentSerialNumber}";
 
     private bool EvaluateStatusResponse(string response)
     {
@@ -127,20 +119,11 @@ internal class PLCStation
         return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{_currentSerialNumber}|{GeneratePassFailResult()}";
     }
 
-    private int GenerateIntResult()
-    {
-        return _random.Next(100, 150);
-    }
+    private int GenerateIntResult() => _random.Next(100, 150);
 
-    private float GenerateFloatResult()
-    {
-        return (float)(_random.Next(5000, 6000) / 100.0);
-    }
+    private float GenerateFloatResult() => (float)(_random.Next(5000, 6000) / 100.0);
 
-    private bool GenerateBoolResult()
-    {
-        return _random.Next(0, 2) == 1;
-    }
+    private bool GenerateBoolResult() => _random.Next(0, 2) == 1;
 
     private string GenerateStringResult()
     {

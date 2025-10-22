@@ -24,10 +24,7 @@ public class PartDataController : ControllerBase
 
     // GET: api/PartData
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<PartData>>> GetParts()
-    {
-        return await _context.Parts.ToListAsync();
-    }
+    public async Task<ActionResult<IEnumerable<PartData>>> GetParts() => await _context.Parts.ToListAsync();
 
     // GET: api/PartData/5
     [HttpGet("{id}")]
@@ -205,8 +202,5 @@ public class PartDataController : ControllerBase
         return NoContent();
     }
 
-    private bool PartDataExists(int id)
-    {
-        return _context.Parts.Any(e => e.PartId == id);
-    }
+    private bool PartDataExists(int id) => _context.Parts.Any(e => e.PartId == id);
 }

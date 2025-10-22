@@ -43,8 +43,5 @@ internal class SerialNumberGenerator
     }
 
 
-    private string PadNumber(int number)
-    {
-        return number.ToString().PadLeft(_digitCount, '0');
-    }
+    private string PadNumber(int number) => number.ToString().PadLeft(_digitCount, '0');
 }

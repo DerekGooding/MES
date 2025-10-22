@@ -76,10 +76,7 @@ internal class PLCClient : IDisposable
         return null;
     }
 
-    public bool IsConnected()
-    {
-        return _client != null && _client.Connected;
-    }
+    public bool IsConnected() => _client != null && _client.Connected;
 
     public void Dispose()
     {

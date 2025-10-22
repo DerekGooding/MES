@@ -24,10 +24,5 @@ public class DataContext : DbContext
 
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<PartData>()
-            .HasKey(p => p.PartId);
-    }
-
+    protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.Entity<PartData>().HasKey(p => p.PartId);
 }
