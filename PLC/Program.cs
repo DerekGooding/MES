@@ -51,7 +51,7 @@ internal class Program
 
         // Create a coordinator to manage the PLC stations
         Coordinator coordinator = new Coordinator(stations);
-        
+
 
         while (true)
         {

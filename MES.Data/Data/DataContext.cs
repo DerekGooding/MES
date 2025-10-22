@@ -22,7 +22,7 @@ public class DataContext : DbContext
         {
 
             options.UseSqlite(_connectionString);
-            
+
 
         }
 

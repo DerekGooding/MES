@@ -43,11 +43,11 @@ internal class PLCStation
             }
             await Task.Delay(_random.Next(100, 500)); //Simulate latency in the initial request
 
-            if(_snArrayIndex != 0)
+            if (_snArrayIndex != 0)
             {
                 statusResponse = await ReadWriteAsync(FormatStatusCheckMessage());
             }
-            
+
             if (EvaluateStatusResponse(statusResponse) || _snArrayIndex == 0)
             {
                 await Task.Delay(_random.Next(_minCycleTime, _maxCycleTime)); //Simulate variable cycle time of the physical station

@@ -53,7 +53,7 @@ internal class PLCServerFactory : IPLCServerFactory
         {
 
             Console.WriteLine($"Error loading configuration: {e.Message}");
-            
+
         }
     }
 }

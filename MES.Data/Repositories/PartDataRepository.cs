@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MES.Common;
+﻿using MES.Common;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace MES.Data;
@@ -49,7 +49,7 @@ public class PartDataRepository : IDisposable
             existingPart.LastStationComplete = partData.LastStationComplete;
             existingPart.Status = partData.Status;
             existingPart.Timestamp = partData.Timestamp;
-            if(partData.VisionMeasurement != null)
+            if (partData.VisionMeasurement != null)
                 existingPart.VisionMeasurement = partData.VisionMeasurement;
             if (partData.PasteDispenseWeight != null)
                 existingPart.PasteDispenseWeight = partData.PasteDispenseWeight;
@@ -70,7 +70,7 @@ public class PartDataRepository : IDisposable
 
         }
 
-       await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 
     public void Dispose()

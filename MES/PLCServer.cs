@@ -1,11 +1,11 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using MES.Common;
+﻿using MES.Common;
 using MES.Common.Config.Enums;
 using MES.Data;
-using System.Reflection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
 
 namespace MES;
 
@@ -49,7 +49,7 @@ internal class PLCServer : IDisposable
 
                 _client = await _listener.AcceptTcpClientAsync(cancellationToken);
                 _logger.LogInformation($"{_name} server accepted a connection.");
-                await HandleClientAsync(_client,cancellationToken);
+                await HandleClientAsync(_client, cancellationToken);
 
             }
 
@@ -155,7 +155,7 @@ internal class PLCServer : IDisposable
 
         if (operation == PLCOperationsEnum.UpdateStatus.ToString())
         {
-            
+
             string status = parts[3].Trim();
             await UpdateStatus(request);
             return $"{PLCOperationsEnum.UpdateStatus}|{_name}|{status}";
@@ -164,7 +164,7 @@ internal class PLCServer : IDisposable
         return $"{_name} received unknown operation: {operation}";
     }
 
-    private async Task<bool>  GetStatus(string serialNumber)
+    private async Task<bool> GetStatus(string serialNumber)
     {
         var dbLogger = _serviceProvider.GetRequiredService<ILogger<PartDataRepository>>();
         using var repository = new PartDataRepository(_dbPath, dbLogger);
@@ -244,7 +244,7 @@ internal class PLCServer : IDisposable
                 }
             }
         }
-        
+
         await repository.UpdatePartDataAsync(part);
     }
 

@@ -14,13 +14,14 @@ internal class Program
 
         string connectionString;
 
-        try {
+        try
+        {
             connectionString = DbConnectionHelper.GetConnectionString();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-            
+
             return;
         }
 
@@ -29,11 +30,11 @@ internal class Program
         context.Database.EnsureCreated();
         context.Dispose();
 
-        
+
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.Logger(lc => lc
-                .Filter.ByIncludingOnly(le => 
+                .Filter.ByIncludingOnly(le =>
                 le.Properties.ContainsKey("SourceContext") &&
                 le.Properties["SourceContext"].ToString().Contains("PLCServer"))
                 .WriteTo.File("Logs/server_log.txt", rollingInterval: RollingInterval.Day))
@@ -49,9 +50,9 @@ internal class Program
         // Create the host builder for the worker service
         var builder = Host.CreateApplicationBuilder(args);
         // Clear default logging providers
-        builder.Logging.ClearProviders(); 
+        builder.Logging.ClearProviders();
         // Add Serilog to the DI container
-        builder.Logging.AddSerilog(); 
+        builder.Logging.AddSerilog();
         // Tell the builder that anytime an IPLCServerFactory is requested, return a PLCServerFactory
         builder.Services.AddSingleton<IPLCServerFactory, PLCServerFactory>();
         // Add PLCServerService as a background (hosted) service to the DI container
