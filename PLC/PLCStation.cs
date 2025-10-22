@@ -15,7 +15,7 @@ internal class PLCStation(StationOptions stationOptions, ClientSimulationOptions
     private string _currentSerialNumber;
     private int _minCycleTime = int.Parse(clientOptions.MinCycleTime);
     private int _maxCycleTime = int.Parse(clientOptions.MaxCycleTimel);
-    private Random _random = new Random();
+    private Random _random = Random.Shared;
     private Dictionary<string, string> _results = stationOptions.Results;
 
     public async Task StartAsync()
