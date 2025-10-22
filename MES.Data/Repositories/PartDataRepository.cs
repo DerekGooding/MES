@@ -67,5 +67,9 @@ public class PartDataRepository(string connectionString, ILogger<PartDataReposit
         await _context.SaveChangesAsync();
     }
 
-    public void Dispose() => _context.Dispose();
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+        _context.Dispose();
+    }
 }
