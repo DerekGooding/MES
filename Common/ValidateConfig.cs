@@ -12,7 +12,7 @@ public static class ValidateConfig
 
         foreach (var option in options)
         {
-            if (String.IsNullOrEmpty(option.StationName) || !char.IsLetter(option.StationName[0]))
+            if (string.IsNullOrEmpty(option.StationName) || !char.IsLetter(option.StationName[0]))
             {
                 throw new InvalidConfigurationException("Station name cannot be empty or whitespace. Check configuration in ServerStationConfig.json file");
             }
@@ -33,7 +33,7 @@ public static class ValidateConfig
                 {
                     string dataType = kvp.Value.ToLower();
 
-                    if (String.IsNullOrEmpty(kvp.Key) || !char.IsLetter(kvp.Key[0]))
+                    if (string.IsNullOrEmpty(kvp.Key) || !char.IsLetter(kvp.Key[0]))
                     {
                         throw new InvalidConfigurationException($"The result name {kvp.Key} is invalid. Cannot be empty or whitespace, and must start with a letter. Check configuration in ServerStationConfig.json file");
                     }
@@ -73,7 +73,7 @@ public static class ValidateConfig
 
         foreach (var option in clientOptions)
         {
-            if (String.IsNullOrEmpty(option.StationName) || !char.IsLetter(option.StationName[0]))
+            if (string.IsNullOrEmpty(option.StationName) || !char.IsLetter(option.StationName[0]))
             {
                 throw new InvalidConfigurationException("Station name cannot be empty or whitespace. Check configuration in ClientSimulationConfig.json file");
             }

@@ -16,7 +16,7 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
     private int _port = int.Parse(options.Port);
     private TcpListener _listener;
     private TcpClient _client;
-    private String _name = options.StationName;
+    private string _name = options.StationName;
     private Dictionary<string, string> _results = options.Results;
     private string _dbPath = dbPath;
     private ILogger<PLCServer> _logger = logger;
