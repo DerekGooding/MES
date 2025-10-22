@@ -28,7 +28,7 @@ internal class PLCServer(StationOptions options, string dbPath, ILogger<PLCServe
         {
             _listener = new TcpListener(_ipAddress, _port);
             _listener.Start(1);
-            _logger.LogInformation($"{_name} server started and listening on {_ipAddress.ToString()}:{_port}");
+            _logger.LogInformation($"{_name} server started and listening on {_ipAddress}:{_port}");
 
             while (!cancellationToken.IsCancellationRequested)
             {
