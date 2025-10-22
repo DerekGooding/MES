@@ -13,6 +13,7 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
     private string _connectionString;
     private readonly ILogger<PLCServer> _logger = logger;
     private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public List<PLCServer> CreateServers()
     {
@@ -30,15 +31,10 @@ internal class PLCServerFactory(ILogger<PLCServer> logger, IServiceProvider serv
     {
         _stationOptions = [];
 
-        JsonSerializerOptions jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
-
         try
         {
             string optionsConfigPath = Path.Combine(AppContext.BaseDirectory, "Config", "StationConfig.json");
-            _stationOptions = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), jsonOptions);
+            _stationOptions = JsonSerializer.Deserialize<List<StationOptions>>(File.ReadAllText(optionsConfigPath), _jsonOptions);
             ValidateConfig.ValidateStationConfig(_stationOptions);
             _connectionString = DbConnectionHelper.GetConnectionString();
 
